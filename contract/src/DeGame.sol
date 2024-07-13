@@ -2,19 +2,12 @@
 pragma solidity ^0.8.26;
 
 import "fhevm/lib/Impl.sol";
-import "fhevm/lib/TFHE.sol";
 
 contract DeGame {
-    uint public constant DICE_NUMBER = 3;
-
     struct Turn {
         address player;
         uint16 nbDice;
         uint8 dieValue;
-    }
-
-    struct Round {
-        Turn[] turns;
     }
 
     struct Game {
@@ -22,9 +15,10 @@ contract DeGame {
         address owner;
         address[] alivePlayers;
         uint8 turnPlayerIndex;
-        Round[] rounds;
+        Turn[][] rounds;
     }
 
+    event GameCreated (uint256 gameId, address creator);
     event GameStarted(uint256 gameId);
     event TurnStarted(uint256 gameId);
     event DiceCallMade(uint256 gameId, address player, uint16 nbDice, uint8 dieValue);
@@ -32,19 +26,43 @@ contract DeGame {
     event TurnEnded(uint256 gameId, address loser);
     event GameEnded(uint256 gameId, address winner);
 
-    uint256 private nonce = 0;
+    uint public constant DICE_NUMBER = 3;
+
+    uint256[] public gameIds;
     mapping(uint256 => Game) public games;
+
+    uint256 private nonce = 0;
     mapping(uint256 => mapping(address => euint8[])) private playerDice;
     mapping(address => bytes32) private publicKeys;
 
-    function createGame(bytes calldata publicKey) public returns (uint256) {
+    function getAvailableGames() public view returns (uint256[] memory) {
+        uint256[] memory availableGames = new uint256[](gameIds.length);
+        uint index = 0;
+
+        for (uint i = 0; i < gameIds.length; i++) {
+            Game memory game = games[gameIds[i]];
+            if (game.rounds.length == 0) {
+                availableGames[index] = game.id;
+                index++;
+            }
+        }
+        return availableGames;
+    }
+
+    function getGame(uint256 gameId) public view returns (Game memory) {
+        return games[gameId];
+    }
+
+    function createGame() public {
         uint256 id = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, nonce++)));
+        gameIds.push(id);
+        games[id].id = id;
         games[id].owner = msg.sender;
         games[id].alivePlayers.push(msg.sender);
         playerDice[id][msg.sender] = new euint8[](DICE_NUMBER);
-        publicKeys[msg.sender] = bytesToBytes32(publicKey);
+        //publicKeys[msg.sender] = bytesToBytes32(publicKey);
 
-        return id;
+        emit GameCreated(id, msg.sender);
     }
 
     function joinGame(uint256 gameId, bytes calldata publicKey) public {
@@ -73,19 +91,19 @@ contract DeGame {
         require(dieValue >= 1 && dieValue <= 6, "Die value must be between 1 and 6");
         require(nbDice > 0, "Number of dice must be greater than 0");
 
-        Round storage lastRound = game.rounds[game.rounds.length - 1];
-        Turn storage lastTurn = lastRound.turns[lastRound.turns.length - 1];
+        Turn[] storage lastRound = game.rounds[game.rounds.length - 1];
+        Turn storage lastTurn = lastRound[lastRound.length - 1];
         require(nbDice > lastTurn.nbDice || dieValue > lastTurn.dieValue, "You must increase the number of dice or the die value");
 
-        lastRound.turns.push(Turn(msg.sender, nbDice, dieValue));
+        lastRound.push(Turn(msg.sender, nbDice, dieValue));
         game.turnPlayerIndex = uint8((game.turnPlayerIndex + 1) % game.alivePlayers.length);
         emit DiceCallMade(game.id, msg.sender, nbDice, dieValue);
     }
 
     function makeLiarCall(uint256 gameId) public turnBased(gameId) {
         Game storage game = games[gameId];
-        Round storage lastRound = game.rounds[game.rounds.length - 1];
-        Turn storage lastTurn = lastRound.turns[lastRound.turns.length - 1];
+        Turn[] storage lastRound = game.rounds[game.rounds.length - 1];
+        Turn storage lastTurn = lastRound[lastRound.length - 1];
 
         endTurn(game, isLiar(game, lastTurn.nbDice, lastTurn.dieValue));
         emit LiarCallMade(game.id, msg.sender, lastTurn.nbDice, lastTurn.dieValue);
