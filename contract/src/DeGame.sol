@@ -32,7 +32,7 @@ contract DeGame is EIP712WithModifier {
         uint8 playerCount;
     }
 
-    event GameCreated(uint256 gameId, address creator);
+    event GameCreated(uint256 gameId, address owner);
     event GameUpdated(uint256 gameId, uint8 playerCount);
     event GameStarted(uint256 gameId);
     event TurnStarted(uint256 gameId);
@@ -45,9 +45,9 @@ contract DeGame is EIP712WithModifier {
 
     uint256[] public gameIds;
     mapping(uint256 => Game) public games;
+    mapping(address => uint256) public playerGame;
 
     uint256 private nonce = 0;
-    mapping(address => uint256) public playerGame;
     mapping(uint256 => mapping(address => euint8[])) private playerDice;
 
     constructor() EIP712WithModifier("DeGame", "1") {}
@@ -100,6 +100,7 @@ contract DeGame is EIP712WithModifier {
         games[id].turnNumber = 0;
         playerDice[id][msg.sender] = new euint8[](DICE_NUMBER);
         playerGame[msg.sender] = id;
+
         emit GameCreated(id, msg.sender);
     }
 
@@ -112,11 +113,12 @@ contract DeGame is EIP712WithModifier {
 
         game.alivePlayers.push(msg.sender);
         playerDice[game.id][msg.sender] = new euint8[](DICE_NUMBER);
+        playerGame[msg.sender] = game.id;
         emit GameUpdated(game.id, uint8(game.alivePlayers.length));
         playerGame[msg.sender] = game.id;
     }
 
-    function leaveGame() public {
+    function leaveGame() public inGame {
         // TODO: Can leave a game that has started?
         require(playerGame[msg.sender] != 0, "You are not in a game");
 
@@ -136,9 +138,8 @@ contract DeGame is EIP712WithModifier {
         emit GameUpdated(game.id, uint8(game.alivePlayers.length));
     }
 
-    function startGame(uint256 gameId) public {
-        Game storage game = games[gameId];
-        require(game.owner != address(0), "Game does not exist");
+    function startGame() public inGame {
+        Game storage game = games[playerGame[msg.sender]];
         require(game.owner == msg.sender, "Only the owner can start the game");
         require(game.roundNumber == 0, "Game already started");
         require(game.alivePlayers.length > 1, "Not enough players");
@@ -147,8 +148,8 @@ contract DeGame is EIP712WithModifier {
         startTurn(game);
     }
 
-    function makeDiceCall(uint256 gameId, uint16 nbDice, uint8 dieValue) public turnBased(gameId) {
-        Game storage game = games[gameId];
+    function makeDiceCall(uint16 nbDice, uint8 dieValue) public inGame turnBased {
+        Game storage game = games[playerGame[msg.sender]];
         require(dieValue >= 1 && dieValue <= 6, "Die value must be between 1 and 6");
         require(nbDice > 0, "Number of dice must be greater than 0");
 
@@ -164,8 +165,8 @@ contract DeGame is EIP712WithModifier {
         emit DiceCallMade(game.id, msg.sender, nbDice, dieValue);
     }
 
-    function makeLiarCall(uint256 gameId) public turnBased(gameId) {
-        Game storage game = games[gameId];
+    function makeLiarCall() public inGame turnBased {
+        Game storage game = games[playerGame[msg.sender]];
         require (game.turnNumber > 0, "You must make a dice call first");
 
         Turn storage lastTurn = game.rounds[game.roundNumber - 1].turns[game.turnNumber - 1];
@@ -200,9 +201,13 @@ contract DeGame is EIP712WithModifier {
         return uint8(index % game.alivePlayers.length);
     }
 
-    modifier turnBased(uint256 gameId) {
-        Game storage game = games[gameId];
-        require(game.owner != address(0), "Game does not exist");
+    modifier inGame() {
+        require(playerGame[msg.sender] != 0, "You are not in a game");
+        _;
+    }
+
+    modifier turnBased() {
+        Game storage game = games[playerGame[msg.sender]];
         require(game.roundNumber > 0, "Game not started");
         require(game.alivePlayers.length > 1, "Game ended");
         // TODO: Specific time to play
@@ -214,11 +219,11 @@ contract DeGame is EIP712WithModifier {
         game.roundNumber += 1;
         game.turnNumber = 0;
 
-        for (uint8 i = 0; i < game.alivePlayers.length; i++) {
-            for (uint j = 0; j < playerDice[game.id][game.alivePlayers[i]].length; j++) {
-                playerDice[game.id][game.alivePlayers[i]][j] = TFHE.add(TFHE.randEuint8(), TFHE.asEuint8(1));
-            }
-        }
+//        for (uint8 i = 0; i < game.alivePlayers.length; i++) {
+//            for (uint j = 0; j < playerDice[game.id][game.alivePlayers[i]].length; j++) {
+//                playerDice[game.id][game.alivePlayers[i]][j] = TFHE.add(TFHE.randEuint8(), TFHE.asEuint8(1));
+//            }
+//        }
 
         emit TurnStarted(game.id);
     }

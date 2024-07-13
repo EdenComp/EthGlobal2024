@@ -17,9 +17,18 @@ contract Player {
         game.joinGame(gameId);
     }
 
+    function makeDiceCallAsPlayer(DeGame game, uint16 nbDice, uint8 dieValue) public {
+        game.makeDiceCall(nbDice, dieValue);
+    }
+
+    function makeLiarCallAsPlayer(DeGame game) public {
+        game.makeLiarCall();
+    }
+
     function leaveAsPlayer(DeGame game) public {
         game.leaveGame();
     }
+
 }
 
 contract DeGameTest is Test {
@@ -58,14 +67,6 @@ contract DeGameTest is Test {
         assertEq(game.alivePlayers.length, 4);
     }
 
-    function test_JoinNonExistentGame() public {
-        // TODO
-    }
-
-    function test_JoinAlreadyJoinedGame() public {
-        // TODO
-    }
-
     function test_StartGame() public {
         DeGame.Game memory game;
         Player ply1 = new Player();
@@ -76,14 +77,9 @@ contract DeGameTest is Test {
         ply2.joinAsPlayer(deGame, idGame);
         game = deGame.getGame(idGame);
         assertEq(game.roundNumber, 0);
-        deGame.startGame(idGame);
+        deGame.startGame();
         game = deGame.getGame(idGame);
         assertEq(game.roundNumber, 1);
-    }
-
-    function test_StartGameInsufficientPlayers() public {
-        // TODO: fix problem with vm.expectRevert();
-        // deGame.startGame(deGame.getAvailableGames()[0]);
     }
 
     function test_LeaveGame() public {
@@ -97,16 +93,5 @@ contract DeGameTest is Test {
         pl.leaveAsPlayer(deGame);
         game = deGame.getGame(idGame);
         assertEq(game.alivePlayers.length, 1);
-    }
-
-    function test_MakeDiceCall() public {
-        /*Player ply1 = new Player();
-        Player ply2 = new Player();
-        Player ply3 = new Player();
-        uint256 idGame = deGame.getAvailableGames()[0].id;
-
-        ply1.joinAsPlayer(deGame, idGame);
-        ply2.joinAsPlayer(deGame, idGame);
-        ply3.joinAsPlayer(deGame, idGame);*/
     }
 }
