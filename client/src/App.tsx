@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from "react-router-dom";
 import SignTest from "./pages/signtest.tsx";
 
 export default function App() {
@@ -6,5 +6,5 @@ export default function App() {
 		<Routes>
 			<Route path="/" element={<SignTest />} />
 		</Routes>
-	)
+	);
 }
