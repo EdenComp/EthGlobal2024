@@ -34,7 +34,8 @@ contract DeGame is EIP712WithModifier {
 
     uint256 private nonce = 0;
     mapping(uint256 => mapping(address => euint8[])) private playerDice;
-    mapping(address => bytes32) private publicKeys;
+
+    constructor() EIP712WithModifier("DeGame", "1") {}
 
     function getAvailableGames() public view returns (uint256[] memory) {
         uint256[] memory availableGames = new uint256[](gameIds.length);
@@ -54,26 +55,38 @@ contract DeGame is EIP712WithModifier {
         return games[gameId];
     }
 
-    function createGame(bytes calldata publicKey) public {
+    function getDice(uint256 gameId, bytes32 publicKey, bytes calldata signature) public view onlySignedPublicKey(publicKey, signature) returns (bytes[] memory) {
+        Game storage game = games[gameId];
+        require(game.owner != address(0), "Game does not exist");
+        require(game.rounds.length > 0, "Game did not start");
+        require(game.alivePlayers.length > 1, "Game ended");
+        require(playerDice[gameId][msg.sender].length > 0, "You are not in the game");
+
+        bytes[] memory dice = new bytes[](playerDice[gameId][msg.sender].length);
+        for (uint i = 0; i < playerDice[gameId][msg.sender].length; i++) {
+            dice[i] = TFHE.reencrypt(playerDice[gameId][msg.sender][i], publicKey);
+        }
+        return dice;
+    }
+
+    function createGame() public {
         uint256 id = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, nonce++)));
         gameIds.push(id);
         games[id].id = id;
         games[id].owner = msg.sender;
         games[id].alivePlayers.push(msg.sender);
         playerDice[id][msg.sender] = new euint8[](DICE_NUMBER);
-        publicKeys[msg.sender] = bytesToBytes32(publicKey);
 
         emit GameCreated(id, msg.sender);
     }
 
-    function joinGame(uint256 gameId, bytes calldata publicKey) public {
+    function joinGame(uint256 gameId) public {
         Game storage game = games[gameId];
         require(game.owner != address(0), "Game does not exist");
         require(game.rounds.length == 0, "Game already started");
         require(playerDice[game.id][msg.sender].length == 0, "Already joined");
         game.alivePlayers.push(msg.sender);
         playerDice[game.id][msg.sender] = new euint8[](DICE_NUMBER);
-        publicKeys[msg.sender] = bytesToBytes32(publicKey);
     }
 
     function startGame(uint256 gameId) public {
