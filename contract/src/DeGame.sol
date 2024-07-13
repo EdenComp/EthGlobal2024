@@ -112,7 +112,6 @@ contract DeGame is EIP712WithModifier {
         playerGame[msg.sender] = game.id;
 
         emit GameUpdated(game.id, uint8(game.alivePlayers.length));
-        playerGame[msg.sender] = game.id;
     }
 
     function leaveGame() public inGame {
@@ -131,7 +130,6 @@ contract DeGame is EIP712WithModifier {
                 break;
             }
         }
-        playerGame[msg.sender] = 0;
         emit GameUpdated(game.id, uint8(game.alivePlayers.length));
     }
 
