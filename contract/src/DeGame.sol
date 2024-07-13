@@ -53,14 +53,14 @@ contract DeGame {
         return games[gameId];
     }
 
-    function createGame() public {
+    function createGame(bytes calldata publicKey) public {
         uint256 id = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, nonce++)));
         gameIds.push(id);
         games[id].id = id;
         games[id].owner = msg.sender;
         games[id].alivePlayers.push(msg.sender);
         playerDice[id][msg.sender] = new euint8[](DICE_NUMBER);
-        //publicKeys[msg.sender] = bytesToBytes32(publicKey);
+        publicKeys[msg.sender] = bytesToBytes32(publicKey);
 
         emit GameCreated(id, msg.sender);
     }
@@ -124,13 +124,11 @@ contract DeGame {
     }
 
     function getNextPlayer(Game storage game) private view returns (uint8) {
-        // TODO: Can be enhanced?
         uint16 index = uint16(game.turnPlayerIndex + 1);
         return uint8(index % game.alivePlayers.length);
     }
 
     function getPreviousPlayer(Game storage game) private view returns (uint8) {
-        // TODO: Can be enhanced?
         uint16 index = uint16(game.turnPlayerIndex + game.alivePlayers.length - 1);
         return uint8(index % game.alivePlayers.length);
     }
@@ -147,11 +145,8 @@ contract DeGame {
     function startTurn(Game storage game) private {
         game.rounds.push();
         for (uint8 i = 0; i < game.alivePlayers.length; i++) {
-            uint8 playerDiceCount = uint8(playerDice[game.id][game.alivePlayers[i]].length);
-            for (uint j = 0; j < playerDiceCount; j++) {
-                euint8 dieValue = TFHE.add(TFHE.randEuint8(6), 1);
-                playerDice[game.id][game.alivePlayers[i]][j] = dieValue;
-                Impl.reencrypt(euint8.unwrap(dieValue), publicKeys[game.alivePlayers[i]]);
+            for (uint j = 0; j < playerDice[game.id][game.alivePlayers[i]].length; j++) {
+                playerDice[game.id][game.alivePlayers[i]][j] = TFHE.add(TFHE.randEuint8(), TFHE.asEuint8(1));
             }
         }
 
