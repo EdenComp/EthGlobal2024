@@ -8,8 +8,8 @@ const SponsorSection = (): ReactElement => {
 			<div className="relative flex flex-col items-center justify-center w-[1440px] min-h-72">
 				<p className={"body-large"}>Sponsored by :</p>
 				<div className={"flex space-x-12"}>
-					<img src={ETHGlobalLogo} className={"h-64"} />
-					<img src={IncoLogo} className={"h-64"} />
+					<img src={ETHGlobalLogo} className={"h-64"} alt="ETHGlobal" />
+					<img src={IncoLogo} className={"h-64"} alt="Inco" />
 				</div>
 			</div>
 		</div>

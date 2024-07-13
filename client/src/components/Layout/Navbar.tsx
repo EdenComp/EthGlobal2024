@@ -1,5 +1,4 @@
 import DiceLogo from "@/assets/DiceLogo.png";
-import SignIn from "@/components/Layout/SignIn.tsx";
 import type { ReactElement } from "react";
 
 export default function Navbar(): ReactElement {
@@ -23,7 +22,7 @@ export default function Navbar(): ReactElement {
 				<div
 					className={"body-default flex space-x-8 max-lg:hidden items-center"}
 				>
-					<img src={DiceLogo} className={"h-10"} />
+					<img src={DiceLogo} className={"h-10"} alt="dice" />
 					{links.map((link) => (
 						<a
 							key={link.route}
@@ -34,7 +33,6 @@ export default function Navbar(): ReactElement {
 						</a>
 					))}
 				</div>
-				<SignIn />
 			</div>
 		</header>
 	);

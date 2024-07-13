@@ -5,7 +5,7 @@ import Dice4 from "@/assets/Dice/Dice-4-invert.png";
 import Dice5 from "@/assets/Dice/Dice-5-invert.png";
 import Dice6 from "@/assets/Dice/Dice-6-invert.png";
 import DiceU from "@/assets/Dice/Dice-unknown-invert.png";
-import Button from "@/components/ui/Button.tsx";
+import { Button } from "@/components/ui/button.tsx";
 import { type ReactElement, useEffect } from "react";
 import { useState } from "react";
 

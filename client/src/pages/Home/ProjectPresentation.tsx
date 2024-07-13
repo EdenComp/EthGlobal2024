@@ -36,7 +36,7 @@ const ProjectPresentation = (): ReactElement => {
 								"group py-16 px-8 border-orange-800 border rounded-2xl flex flex-col items-center justify-center hover:scale-110 hover:shadow-xl hover:shadow-neutral-grey_2 transition-all bg-background-primary hover:bg-orange-900"
 							}
 						>
-							<img src={card.icon} height={50} width={50} />
+							<img src={card.icon} height={50} width={50} alt="card" />
 							<div
 								className={"flex flex-col items-center justify-center mt-8 "}
 							>
