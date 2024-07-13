@@ -54,9 +54,8 @@ contract DeGame {
         startTurn(game);
     }
 
-    function makeDiceCall(uint256 gameId, uint16 nbDice, uint8 dieValue) public {
+    function makeDiceCall(uint256 gameId, uint16 nbDice, uint8 dieValue) public turnBased(gameId) {
         Game storage game = games[gameId];
-        ensureCanPlay(game);
         require(dieValue >= 1 && dieValue <= 6, "Die value must be between 1 and 6");
         require(nbDice > 0, "Number of dice must be greater than 0");
 
@@ -68,10 +67,8 @@ contract DeGame {
         game.turnPlayerIndex = uint8((game.turnPlayerIndex + 1) % game.alivePlayers.length);
     }
 
-    function makeLiarCall(uint256 gameId) public {
+    function makeLiarCall(uint256 gameId) public turnBased(gameId) {
         Game storage game = games[gameId];
-        ensureCanPlay(game);
-
         Round storage lastRound = game.rounds[game.rounds.length - 1];
         Turn storage lastTurn = lastRound.turns[lastRound.turns.length - 1];
 
@@ -102,11 +99,13 @@ contract DeGame {
         return uint8(index % game.alivePlayers.length);
     }
 
-    function ensureCanPlay(Game storage game) private view {
+    modifier turnBased(uint256 gameId) {
+        Game storage game = games[gameId];
         require(game.owner != address(0), "Game does not exist");
         require(game.rounds.length > 0, "Game not started");
         require(game.alivePlayers.length > 1, "Game ended");
         require(game.alivePlayers[game.turnPlayerIndex] == msg.sender, "Not your turn");
+        _;
     }
 
     function startTurn(Game storage game) private {
