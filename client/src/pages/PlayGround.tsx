@@ -6,19 +6,19 @@ import Dice5 from "@/assets/Dice/Dice-5.png";
 import Dice6 from "@/assets/Dice/Dice-6.png";
 import DiceU from "@/assets/Dice/Dice-unknown.png";
 import Button from "@/components/ui/Button.tsx";
-import type { ReactElement } from "react";
+import { type ReactElement, useEffect } from "react";
 import { useState } from "react";
-import { Simulate } from "react-dom/test-utils";
-import play = Simulate.play;
 
 const diceImages = [Dice1, Dice2, Dice3, Dice4, Dice5, Dice6, DiceU];
 
-interface Opponent {
+interface Player {
 	name: string;
 	dices: number[];
 }
 
 export default function Playground(): ReactElement {
+	const [turnEnd, setTurnEnd] = useState(false);
+	const [currentPlayer, setCurrentPlayer] = useState(0);
 	const playerName = "aTom.Inc";
 	const players = [
 		{
@@ -37,7 +37,32 @@ export default function Playground(): ReactElement {
 			name: "Jean",
 			dices: [1, 4, 1, 6, 2],
 		},
+		{
+			name: "Pierre",
+			dices: [5, 4, 3],
+		},
+		{
+			name: "Paul",
+			dices: [1, 2, 3, 4],
+		},
+		{
+			name: "Jacques",
+			dices: [1, 2, 5, 6],
+		},
+		{
+			name: "Marie",
+			dices: [1, 5, 6],
+		},
+		{
+			name: "Sophie",
+			dices: [1, 4, 5, 6],
+		},
+		{
+			name: "Alice",
+			dices: [3, 4, 5, 6],
+		},
 	];
+	const [sortedPlayers, setSortedPlayers] = useState<Player[]>(players);
 	const [displayedPlayers, setDisplayedPlayers] = useState([
 		players[players.length - 2],
 		players[players.length - 1],
@@ -45,54 +70,84 @@ export default function Playground(): ReactElement {
 		players[1],
 		players[2],
 	]);
-	const [currentPlayer, setCurrentPlayer] = useState(0);
 
-	const updateCurrentPlayer = (i: number) => {
-		setCurrentPlayer((prev) => (prev + i + players.length) % players.length);
-		const newDisplayedPlayers = [];
-		if (i > 0) {
-			for (let j = 1; j < 5; j++) {
-				newDisplayedPlayers.push(
-					players[(currentPlayer + j + 1) % players.length],
-				);
-			}
-			newDisplayedPlayers.push(players[currentPlayer]);
-		}
+	useEffect(() => {
+		const newSortedPlayers = [...players].sort(
+			(a, b) => b.dices.length - a.dices.length,
+		);
+		setSortedPlayers(newSortedPlayers);
+	}, [players]);
+
+	const updateCurrentPlayer = (step: number) => {
+		const totalPlayers = players.length;
+		const nextPlayerIndex =
+			(currentPlayer + step + totalPlayers) % totalPlayers;
+		const newDisplayedPlayers = [
+			players[(nextPlayerIndex - 2 + totalPlayers) % totalPlayers],
+			players[(nextPlayerIndex - 1 + totalPlayers) % totalPlayers],
+			players[nextPlayerIndex],
+			players[(nextPlayerIndex + 1) % totalPlayers],
+			players[(nextPlayerIndex + 2) % totalPlayers],
+		];
 		setDisplayedPlayers(newDisplayedPlayers);
+		setCurrentPlayer(nextPlayerIndex);
 	};
 
+	console.log("newCurrentPlayer", currentPlayer);
+	console.log(players[currentPlayer].name);
+	console.log("turnEnd", turnEnd);
+	console.log("players", players);
+	console.log("displayedPlayers", displayedPlayers);
 	return (
 		<div className="relative h-screen min-w-screen flex flex-col items-center justify-center bg-background-tertiary overflow-hidden">
-			<div className={"flex h-[50%] w-full"}>
+			<div className={"flex h-[45%] w-full"}>
 				{/* MENU */}
-				<div className={"w-[25%] h-full p-8"}>
+				<div className={"w-[25%] h-full p-12"}>
 					<div
 						className={
 							"bg-neutral-grey_1 rounded-2xl size-full p-8 flex flex-col items-center"
 						}
 					>
+						<h3 className={"font-bold"}>{"Menu"}</h3>
+						<div className={"flex"}>
+							<Button
+								onClick={() => {
+									updateCurrentPlayer(-1);
+								}}
+							>
+								prev
+							</Button>
+							<h2>{currentPlayer + 1}</h2>
+							<Button
+								onClick={() => {
+									updateCurrentPlayer(1);
+								}}
+							>
+								next
+							</Button>
+						</div>
+
 						<Button
 							onClick={() => {
-								updateCurrentPlayer(1);
+								setTurnEnd(!turnEnd);
 							}}
 						>
-							{"Suivant"}
+							Terminer tour
 						</Button>
-						<h3>{currentPlayer + 1}</h3>
 						<Button
 							onClick={() => {
-								updateCurrentPlayer(-1);
+								window.location.href = "/";
 							}}
 						>
-							{"Précédent"}
+							Quitter
 						</Button>
 					</div>
 				</div>
 				{/* PLAYER BOARD */}
-				<div className={"w-[50%] h-full p-8"}>
+				<div className={"w-[50%] h-full px-8 pb-6"}>
 					<div
 						className={
-							"bg-neutral-white rounded-2xl size-full flex flex-col justify-center items-center space-y-4"
+							"bg-neutral-white rounded-b-2xl size-full flex flex-col justify-center items-center space-y-4"
 						}
 					>
 						<h2 className={"font-bold"}>
@@ -147,8 +202,42 @@ export default function Playground(): ReactElement {
 					</div>
 				</div>
 				{/* PLAYERS LEADERBOARD */}
-				<div className={"w-[25%] h-full p-8"}>
-					<div className={"bg-neutral-grey_1 rounded-2xl size-full p-8"} />
+				<div className={"w-[25%] h-full p-12"}>
+					<div
+						className={
+							"relative bg-neutral-grey_1 rounded-2xl size-full overflow-hidden"
+						}
+					>
+						<h3 className={"font-bold text-center py-4"}>Leaderboard</h3>
+						{sortedPlayers.map((player, index) => (
+							<div
+								key={index}
+								className={`flex flex-row space-x-4 items-center justify-between text-left px-12 ${
+									player.name === playerName ? "bg-orange-100" : ""
+								}`}
+							>
+								<p className={"body-default "}>{player.name}</p>
+								<p className={"body-default text-left"}>
+									{player.dices.length}
+								</p>
+							</div>
+						))}
+						<div
+							className={
+								"w-full h-[10%] absolute bottom-0 bg-orange-800 rounded-b-2xl flex items-center justify-between px-12"
+							}
+						>
+							<p className={"body-bold-default"}>
+								{players.find((player) => player.name === playerName)?.name}
+							</p>
+							<p className={"body-bold-default"}>
+								{
+									players.find((player) => player.name === playerName)?.dices
+										.length
+								}
+							</p>
+						</div>
+					</div>
 				</div>
 			</div>
 			{/* QUICK INFOS */}
@@ -156,20 +245,32 @@ export default function Playground(): ReactElement {
 			{/* PLAYERS TURN, ACTIONS AND PREVIEW */}
 			<div
 				className={
-					"h-[40%] flex overflow-hidden justify-center items-center space-x-8"
+					"h-[45%] flex overflow-hidden justify-center items-center space-x-8"
 				}
 			>
 				{displayedPlayers.map((player, index) => (
 					<div
 						key={index}
-						className={`flex bg-neutral-grey_1 h-80 rounded-2xl w-[640px] justify-center items-center ${
+						className={`flex bg-neutral-grey_1 h-[350px] rounded-2xl w-[640px] justify-center items-center flex-col ${
 							players.find((p) => p.name === player.name)?.name ===
 							players[currentPlayer].name
 								? "bg-neutral-white"
-								: ""
+								: "scale-90"
 						}`}
 					>
-						<h2>{player.name}</h2>
+						<h3 className={"font-bold"}>{player.name}</h3>
+						<div className={"w-full h-[50%]"} />
+						<div className={"flex flex-row space-x-4"}>
+							{player.dices.map((dice, index) => (
+								<img
+									key={index}
+									src={turnEnd ? diceImages[dice - 1] : DiceU}
+									height={70}
+									width={70}
+									alt={"dice"}
+								/>
+							))}
+						</div>
 					</div>
 				))}
 			</div>
