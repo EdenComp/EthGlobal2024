@@ -27,8 +27,8 @@ module.exports = {
 				black: "#000000",
 			},
 			background: {
-				primary: "#2A2A2A",
-				secondary: "#161616",
+				primary: "#3A3A3A",
+				secondary: "#262626",
 				tertiary: "#101010",
 			},
 			orange: {

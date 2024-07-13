@@ -9,9 +9,9 @@ export default function Home() {
 		<Layout>
 			<HeroBannerSection />
 			<SponsorSection />
-			<a href={"/playground"} className={"flex pt-8 pb-24"}>
+			<a href={"/playground"} className={"flex py-24"}>
 				<Button>
-					<h2>JOUER</h2>
+					<h2 className={"font-bold"}>PLAY</h2>
 				</Button>
 			</a>
 		</Layout>

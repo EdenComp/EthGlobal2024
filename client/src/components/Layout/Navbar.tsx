@@ -16,10 +16,6 @@ export default function Navbar(): ReactElement {
 			name: "Team",
 			route: "/team",
 		},
-		{
-			name: "Contact",
-			route: "/contact",
-		},
 	];
 	return (
 		<header className="sticky top-0 z-50 flex h-20 w-full select-none justify-center bg-background-primary px-4">
