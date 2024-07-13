@@ -16,117 +16,139 @@ interface Opponent {
 	dices: number[];
 }
 
-const diceImages = [Dice1, Dice2, Dice3, Dice4, Dice5, Dice6, DiceU];
+const cardPositions = [
+	{
+		positions: "right-full top-12",
+		size: 0.8,
+	},
+	{
+		positions: "left-8",
+		size: 1,
+	},
+	{
+		positions: "bottom-0",
+		size: 1.2,
+	},
+	{
+		positions: "right-8",
+		size: 1,
+	},
+	{
+		positions: "left-full top-12",
+		size: 0.8,
+	},
+];
 
-const OpponentsBoard = ({
-	opponent,
-	end,
-}: { opponent: Opponent; end: boolean }): ReactElement => {
-	return (
-		<div className={"relative size-full"}>
-			<h3
-				className={
-					"absolute top-0 left-1/2 -translate-x-[50%] text-neutral-white font-bold"
-				}
-			>
-				{opponent.name}
-			</h3>
-			<div className="absolute bottom-4 inset-x-0 flex items-end justify-center mx-auto space-x-4 ">
-				<img src={GobeletClosed} className={"w-24"} />
-				{opponent.dices.map((dice, index) => (
-					<div className={"size-16 mb-4"}>
-						{end ? (
-							<img
-								key={index}
-								src={diceImages[dice - 1]}
-								alt={`Dice ${dice}`}
-							/>
-						) : (
-							<img key={index} src={DiceU} alt={`Dice Unknown`} />
-						)}
-					</div>
-				))}
-			</div>
-		</div>
-	);
-};
+const diceImages = [Dice1, Dice2, Dice3, Dice4, Dice5, Dice6, DiceU];
 
 export default function Playground() {
 	const [gameEnd, setGameEnd] = useState(false);
-	const player = {
-		name: "aTom.Inc",
-		dices: [2, 6, 4, 4, 3],
-	};
-	const op1 = {
-		name: "Gontrant",
-		dices: [2, 1, 3, 2, 6],
-	};
-	const op2 = {
-		name: "Sylvain",
-		dices: [3, 2, 5, 4, 2],
-	};
-	const op3 = {
-		name: "Jean",
-		dices: [1, 4, 1, 6, 2],
-	};
+
+	const playerName = "aTom.Inc";
+	const players = [
+		{
+			name: "aTom.Inc",
+			dices: [2, 6, 4, 4, 3],
+		},
+		{
+			name: "Gontrant",
+			dices: [2, 1, 6],
+		},
+		{
+			name: "Sylvain",
+			dices: [3, 2],
+		},
+		{
+			name: "Jean",
+			dices: [1, 4, 1, 6, 2],
+		},
+		{
+			name: "Thibaud",
+			dices: [6, 5, 6, 1],
+		},
+	];
+	const [currentPlayer, setCurrentPlayer] = useState(0);
 
 	return (
-		<div className="relative h-screen w-screen flex items-center justify-center bg-background-tertiary">
-			<a href="/" className="absolute top-2 left-2">
-				<Button>{"<"}</Button>
-			</a>
-			<div
-				onClick={() => setGameEnd(!gameEnd)}
-				className="absolute top-2 left-24"
-			>
-				<Button>{"Reveal"}</Button>
-			</div>
-			<div
-				onClick={() => setGameEnd(!gameEnd)}
-				className="absolute top-2 left-56"
-			>
-				<Button>{"Rotate"}</Button>
-			</div>
-			<div
-				className={
-					"absolute top-0 w-[650px] h-[350px] rounded-b-2xl border-x-2 border-b-8 border-neutral-white bg-background-primary"
-				}
-			></div>
-			<div
-				className={
-					"absolute left-8 w-[650px] h-[300px] bg-opacity-20 -translate-y-12"
-				}
-			>
-				<OpponentsBoard opponent={op1} end={gameEnd} />
-			</div>
-
-			<div
-				className={
-					"absolute right-8 w-[650px] h-[300px]  bg-opacity-20 -translate-y-12"
-				}
-			>
-				<OpponentsBoard opponent={op3} end={gameEnd} />
-			</div>
-			<div className="absolute bottom-0 h-2/5 w-full bg-opacity-20">
-				<h2
-					className={
-						"absolute top-0 left-1/2 -translate-x-[50%] text-neutral-white font-bold"
-					}
-				>
-					{player.name}
-				</h2>
-				<div className="absolute bottom-0 inset-x-0 flex items-end justify-center mx-auto space-x-6 ">
-					<img src={GobeletClosed} className={"w-36"} />
-					{player.dices.map((dice, index) => (
-						<div className={"size-28 mb-6"}>
-							<img
-								key={index}
-								src={diceImages[dice - 1]}
-								alt={`Dice ${dice}`}
-							/>
-						</div>
-					))}
+		<div className="relative h-screen w-screen flex flex-col items-center justify-center bg-background-tertiary overflow-x-hidden">
+			<div className={"flex h-[50%] w-full"}>
+				{/* MENU */}
+				<div className={"w-[25%] h-full p-8"}>
+					<div className={"bg-neutral-grey_1 rounded-2xl size-full p-8"}></div>
 				</div>
+				{/* PLAYER BOARD */}
+				<div className={"w-[50%] h-full p-8"}>
+					<div
+						className={
+							"bg-neutral-white rounded-2xl size-full flex flex-col justify-center items-center space-y-4"
+						}
+					>
+						<h2 className={"font-bold"}>
+							{players.find((player) => player.name === playerName)?.name}
+						</h2>
+						<div
+							className={
+								"h-[40%] w-full flex flex-row items-center justify-around"
+							}
+						>
+							<div className={"flex space-x-8 text-center"}>
+								<img src={DiceU} height={100} width={100} />
+								<h1 className={"font-bold"}>x</h1>
+								<input
+									type="number"
+									className={"w-16 h-16 bg-[#eeeeee] rounded-2xl"}
+									style={{
+										fontSize: "3rem",
+										textAlign: "center",
+										width: "6rem",
+										height: "6rem",
+									}}
+								/>
+							</div>
+							<div className={"flex flex-col space-y-4"}>
+								<Button>
+									<p className={"body-bold-large"}>Menteur</p>
+								</Button>
+								<Button>
+									<p className={"body-bold-large px-2.5"}>Valider</p>
+								</Button>
+							</div>
+						</div>
+						<div className={"flex flex-row space-x-4"}>
+							{players
+								.find((player) => player.name === playerName)
+								?.dices.map((dice, index) => (
+									<img
+										key={index}
+										src={diceImages[dice - 1]}
+										height={100}
+										width={100}
+									/>
+								))}
+						</div>
+					</div>
+				</div>
+				{/* PLAYERS LEADERBOARD */}
+				<div className={"w-[25%] h-full p-8"}>
+					<div className={"bg-neutral-grey_1 rounded-2xl size-full p-8"}></div>
+				</div>
+			</div>
+			{/* QUICK INFOS */}
+			<div className={"h-[10%] bg-neutral-grey_1 w-full items-center"}></div>
+			{/* PLAYERS TURN, ACTIONS AND PREVIEW */}
+			<div
+				className={
+					"h-[40%] w-full flex overflow-hidden justify-center items-center space-x-8"
+				}
+			>
+				{players.map((player, index) => (
+					<div
+						key={index}
+						className={"flex bg-neutral-grey_1 h-80 rounded-2xl w-[640px]"}
+					>
+						<h2>{player.name}</h2>
+					</div>
+				))}
 			</div>
 		</div>
 	);

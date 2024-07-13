@@ -1,6 +1,7 @@
 import Layout from "@/components/Layout.tsx";
 import Button from "@/components/ui/Button";
 import HeroBannerSection from "@/pages/Home/HeroBannerSection.tsx";
+import ProjectPresentation from "@/pages/Home/ProjectPresentation.tsx";
 import SponsorSection from "@/pages/Home/SponsorSection.tsx";
 
 export default function Home() {
