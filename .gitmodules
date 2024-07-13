@@ -4,3 +4,6 @@
 [submodule "contract/lib/fhevm"]
 	path = contract/lib/fhevm
 	url = https://github.com/zama-ai/fhevm
+[submodule "contract/lib/openzeppelin-contracts"]
+	path = contract/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
