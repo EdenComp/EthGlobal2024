@@ -2,8 +2,9 @@
 pragma solidity ^0.8.26;
 
 import "fhevm/lib/Impl.sol";
+import "fhevm/abstracts/EIP712WithModifier.sol";
 
-contract DeGame {
+contract DeGame is EIP712WithModifier {
     struct Turn {
         address player;
         uint16 nbDice;
