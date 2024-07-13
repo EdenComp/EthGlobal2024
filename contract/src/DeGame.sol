@@ -7,7 +7,7 @@ contract DeGame {
     struct Turn {
         address player;
         uint16 nbDice;
-        uint16 dieValue;
+        uint8 dieValue;
     }
 
     struct Round {
@@ -21,6 +21,13 @@ contract DeGame {
         uint8 turnPlayerIndex;
         Round[] rounds;
     }
+
+    event GameStarted(uint256 gameId);
+    event TurnStarted(uint256 gameId);
+    event DiceCallMade(uint256 gameId, address player, uint16 nbDice, uint8 dieValue);
+    event LiarCallMade(uint256 gameId, address player, uint16 nbDice, uint8 dieValue);
+    event TurnEnded(uint256 gameId, address loser);
+    event GameEnded(uint256 gameId, address winner);
 
     uint256 private nonce = 0;
     mapping(uint256 => Game) public games;
@@ -51,6 +58,7 @@ contract DeGame {
         require(game.rounds.length == 0, "Game already started");
         require(game.alivePlayers.length > 1, "Not enough players");
 
+        emit GameStarted(game.id);
         startTurn(game);
     }
 
@@ -65,6 +73,7 @@ contract DeGame {
 
         lastRound.turns.push(Turn(msg.sender, nbDice, dieValue));
         game.turnPlayerIndex = uint8((game.turnPlayerIndex + 1) % game.alivePlayers.length);
+        emit DiceCallMade(game.id, msg.sender, nbDice, dieValue);
     }
 
     function makeLiarCall(uint256 gameId) public turnBased(gameId) {
@@ -73,6 +82,7 @@ contract DeGame {
         Turn storage lastTurn = lastRound.turns[lastRound.turns.length - 1];
 
         endTurn(game, isLiar(game, lastTurn.nbDice, lastTurn.dieValue));
+        emit LiarCallMade(game.id, msg.sender, lastTurn.nbDice, lastTurn.dieValue);
     }
 
     function isLiar(Game storage game, uint16 nbDice, uint16 dieValue) private view returns (bool) {
@@ -116,16 +126,18 @@ contract DeGame {
                 playerDice[game.id][game.alivePlayers[i]][j] = 1;
             }
         }
+
+        emit TurnStarted(game.id);
     }
 
     function endTurn(Game storage game, bool liar) private {
         uint8 loserPlayerIndex = liar ? getPreviousPlayer(game) : game.turnPlayerIndex;
         bool eliminated = playerDice[game.id][game.alivePlayers[loserPlayerIndex]].length == 0;
 
+        emit TurnEnded(game.id, game.alivePlayers[loserPlayerIndex]);
         playerDice[game.id][game.alivePlayers[loserPlayerIndex]].pop();
         if (eliminated) {
-            game.alivePlayers[loserPlayerIndex] = game.alivePlayers[game.alivePlayers.length - 1];
-            game.alivePlayers.pop();
+            removePlayer(game, loserPlayerIndex);
             game.turnPlayerIndex = uint8(loserPlayerIndex % game.alivePlayers.length);
         } else if (liar) {
             game.turnPlayerIndex = loserPlayerIndex;
@@ -134,7 +146,14 @@ contract DeGame {
         if (game.alivePlayers.length > 1) {
             startTurn(game);
         } else {
-            // TODO: Submit win event
+            emit GameEnded(game.id, game.alivePlayers[0]);
         }
+    }
+
+    function removePlayer(Game storage game, uint8 index) private {
+        for (uint i = index; i < game.alivePlayers.length-1; i++){
+            game.alivePlayers[i] = game.alivePlayers[i + 1];
+        }
+        delete game.alivePlayers[game.alivePlayers.length - 1];
     }
 }
