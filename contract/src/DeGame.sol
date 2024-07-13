@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.26;
 
+import "fhevm/lib/TFHE.sol";
+
 contract DeGame {
     uint public constant DICE_NUMBER = 3;
 
@@ -31,13 +33,13 @@ contract DeGame {
 
     uint256 private nonce = 0;
     mapping(uint256 => Game) public games;
-    mapping(uint256 => mapping(address => uint8[])) private playerDice;
+    mapping(uint256 => mapping(address => euint8[])) private playerDice;
 
     function createGame() public returns (uint256) {
         uint256 id = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, nonce++)));
         games[id].owner = msg.sender;
         games[id].alivePlayers.push(msg.sender);
-        playerDice[id][msg.sender] = new uint8[](DICE_NUMBER);
+        playerDice[id][msg.sender] = new euint8[](DICE_NUMBER);
 
         return id;
     }
@@ -48,7 +50,7 @@ contract DeGame {
         require(game.rounds.length == 0, "Game already started");
         require(playerDice[game.id][msg.sender].length == 0, "Already joined");
         game.alivePlayers.push(msg.sender);
-        playerDice[game.id][msg.sender] = new uint8[](DICE_NUMBER);
+        playerDice[game.id][msg.sender] = new euint8[](DICE_NUMBER);
     }
 
     function startGame(uint256 gameId) public {
@@ -88,10 +90,13 @@ contract DeGame {
     function isLiar(Game storage game, uint16 nbDice, uint16 dieValue) private view returns (bool) {
         uint16 count = 0;
         for (uint8 i = 0; i < game.alivePlayers.length && count < nbDice; i++) {
-            for (uint j = 0; j < DICE_NUMBER && count < nbDice; j++) {
-                if (playerDice[game.id][game.alivePlayers[i]][j] == dieValue) {
-                    count++;
-                }
+            uint8 playerDiceCount = uint8(playerDice[game.id][game.alivePlayers[i]].length);
+            for (uint j = 0; j < playerDiceCount && count < nbDice; j++) {
+                // TODO: Implement decryption
+//                uint8 currentDieValue = uint8(TFHE.decrypt(playerDice[game.id][game.alivePlayers[i]][j]));
+//                if (currentDieValue == dieValue) {
+//                    count++;
+//                }
             }
         }
         return count < nbDice;
@@ -120,10 +125,13 @@ contract DeGame {
 
     function startTurn(Game storage game) private {
         game.rounds.push();
-        // TODO: Implement Inco random
         for (uint8 i = 0; i < game.alivePlayers.length; i++) {
-            for (uint j = 0; j < DICE_NUMBER; j++) {
-                playerDice[game.id][game.alivePlayers[i]][j] = 1;
+            uint8 playerDiceCount = uint8(playerDice[game.id][game.alivePlayers[i]].length);
+            for (uint j = 0; j < playerDiceCount; j++) {
+                euint8 dieValue = TFHE.add(TFHE.randEuint8(6), 1);
+                TFHE.allow(dieValue, address(this));
+                TFHE.allow(dieValue, game.alivePlayers[i]);
+                playerDice[game.id][game.alivePlayers[i]][j] = TFHE.add(dieValue, 1);
             }
         }
 
