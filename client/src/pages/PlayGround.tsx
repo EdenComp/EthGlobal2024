@@ -1,10 +1,10 @@
-import Dice1 from "@/assets/Dice/Dice-1.png";
-import Dice2 from "@/assets/Dice/Dice-2.png";
-import Dice3 from "@/assets/Dice/Dice-3.png";
-import Dice4 from "@/assets/Dice/Dice-4.png";
-import Dice5 from "@/assets/Dice/Dice-5.png";
-import Dice6 from "@/assets/Dice/Dice-6.png";
-import DiceU from "@/assets/Dice/Dice-unknown.png";
+import Dice1 from "@/assets/Dice/Dice-1-invert.png";
+import Dice2 from "@/assets/Dice/Dice-2-invert.png";
+import Dice3 from "@/assets/Dice/Dice-3-invert.png";
+import Dice4 from "@/assets/Dice/Dice-4-invert.png";
+import Dice5 from "@/assets/Dice/Dice-5-invert.png";
+import Dice6 from "@/assets/Dice/Dice-6-invert.png";
+import DiceU from "@/assets/Dice/Dice-unknown-invert.png";
 import Button from "@/components/ui/Button.tsx";
 import { type ReactElement, useEffect } from "react";
 import { useState } from "react";
@@ -99,13 +99,13 @@ export default function Playground(): ReactElement {
 	console.log("players", players);
 	console.log("displayedPlayers", displayedPlayers);
 	return (
-		<div className="relative h-screen min-w-screen flex flex-col items-center justify-center bg-background-tertiary overflow-hidden">
+		<div className="relative h-screen min-w-screen flex flex-col items-center justify-center bg-background-tertiary overflow-hidden text-neutral-white">
 			<div className={"flex h-[45%] w-full"}>
 				{/* MENU */}
 				<div className={"w-[25%] h-full p-12"}>
 					<div
 						className={
-							"bg-neutral-grey_1 rounded-2xl size-full p-8 flex flex-col items-center"
+							"bg-background-secondary rounded-2xl size-full p-8 flex flex-col items-center"
 						}
 					>
 						<h3 className={"font-bold"}>{"Menu"}</h3>
@@ -147,7 +147,7 @@ export default function Playground(): ReactElement {
 				<div className={"w-[50%] h-full px-8 pb-6"}>
 					<div
 						className={
-							"bg-neutral-white rounded-b-2xl size-full flex flex-col justify-center items-center space-y-4"
+							"bg-background-primary rounded-b-2xl size-full flex flex-col justify-center items-center space-y-4"
 						}
 					>
 						<h2 className={"font-bold"}>
@@ -168,7 +168,9 @@ export default function Playground(): ReactElement {
 								<h1 className={"font-bold"}>x</h1>
 								<input
 									type="number"
-									className={"w-16 h-16 bg-[#eeeeee] rounded-2xl"}
+									className={
+										"w-16 h-16 bg-background-secondary border-2 border-neutral-white rounded-2xl"
+									}
 									style={{
 										fontSize: "3rem",
 										textAlign: "center",
@@ -205,7 +207,7 @@ export default function Playground(): ReactElement {
 				<div className={"w-[25%] h-full p-12"}>
 					<div
 						className={
-							"relative bg-neutral-grey_1 rounded-2xl size-full overflow-hidden"
+							"relative bg-background-secondary rounded-2xl size-full overflow-hidden"
 						}
 					>
 						<h3 className={"font-bold text-center py-4"}>Leaderboard</h3>
@@ -213,7 +215,9 @@ export default function Playground(): ReactElement {
 							<div
 								key={index}
 								className={`flex flex-row space-x-4 items-center justify-between text-left px-12 ${
-									player.name === playerName ? "bg-orange-100" : ""
+									player.name === playerName
+										? "bg-orange-900 bg-opacity-20"
+										: ""
 								}`}
 							>
 								<p className={"body-default "}>{player.name}</p>
@@ -224,7 +228,7 @@ export default function Playground(): ReactElement {
 						))}
 						<div
 							className={
-								"w-full h-[10%] absolute bottom-0 bg-orange-800 rounded-b-2xl flex items-center justify-between px-12"
+								"w-full h-[10%] absolute bottom-0 bg-orange-900 rounded-b-2xl flex items-center justify-between px-12"
 							}
 						>
 							<p className={"body-bold-default"}>
@@ -241,7 +245,7 @@ export default function Playground(): ReactElement {
 				</div>
 			</div>
 			{/* QUICK INFOS */}
-			<div className={"h-[10%] bg-neutral-grey_1 w-full items-center"} />
+			<div className={"h-[10%] bg-background-secondary w-full items-center"} />
 			{/* PLAYERS TURN, ACTIONS AND PREVIEW */}
 			<div
 				className={
@@ -251,11 +255,11 @@ export default function Playground(): ReactElement {
 				{displayedPlayers.map((player, index) => (
 					<div
 						key={index}
-						className={`flex bg-neutral-grey_1 h-[350px] rounded-2xl w-[640px] justify-center items-center flex-col ${
+						className={`flex h-[350px] rounded-2xl w-[640px] justify-center items-center flex-col ${
 							players.find((p) => p.name === player.name)?.name ===
 							players[currentPlayer].name
-								? "bg-neutral-white"
-								: "scale-90"
+								? "bg-background-primary"
+								: "bg-background-secondary scale-90"
 						}`}
 					>
 						<h3 className={"font-bold"}>{player.name}</h3>
