@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.26;
 
+import "fhevm/lib/Impl.sol";
 import "fhevm/lib/TFHE.sol";
 
 contract DeGame {
@@ -34,23 +35,26 @@ contract DeGame {
     uint256 private nonce = 0;
     mapping(uint256 => Game) public games;
     mapping(uint256 => mapping(address => euint8[])) private playerDice;
+    mapping(address => bytes32) private publicKeys;
 
-    function createGame() public returns (uint256) {
+    function createGame(bytes calldata publicKey) public returns (uint256) {
         uint256 id = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, nonce++)));
         games[id].owner = msg.sender;
         games[id].alivePlayers.push(msg.sender);
         playerDice[id][msg.sender] = new euint8[](DICE_NUMBER);
+        publicKeys[msg.sender] = bytesToBytes32(publicKey);
 
         return id;
     }
 
-    function joinGame(uint256 gameId) public {
+    function joinGame(uint256 gameId, bytes calldata publicKey) public {
         Game storage game = games[gameId];
         require(game.owner != address(0), "Game does not exist");
         require(game.rounds.length == 0, "Game already started");
         require(playerDice[game.id][msg.sender].length == 0, "Already joined");
         game.alivePlayers.push(msg.sender);
         playerDice[game.id][msg.sender] = new euint8[](DICE_NUMBER);
+        publicKeys[msg.sender] = bytesToBytes32(publicKey);
     }
 
     function startGame(uint256 gameId) public {
@@ -92,11 +96,10 @@ contract DeGame {
         for (uint8 i = 0; i < game.alivePlayers.length && count < nbDice; i++) {
             uint8 playerDiceCount = uint8(playerDice[game.id][game.alivePlayers[i]].length);
             for (uint j = 0; j < playerDiceCount && count < nbDice; j++) {
-                // TODO: Implement decryption
-//                uint8 currentDieValue = uint8(TFHE.decrypt(playerDice[game.id][game.alivePlayers[i]][j]));
-//                if (currentDieValue == dieValue) {
-//                    count++;
-//                }
+                uint8 currentDieValue = uint8(TFHE.decrypt(playerDice[game.id][game.alivePlayers[i]][j]));
+                if (currentDieValue == dieValue) {
+                    count++;
+                }
             }
         }
         return count < nbDice;
@@ -129,9 +132,8 @@ contract DeGame {
             uint8 playerDiceCount = uint8(playerDice[game.id][game.alivePlayers[i]].length);
             for (uint j = 0; j < playerDiceCount; j++) {
                 euint8 dieValue = TFHE.add(TFHE.randEuint8(6), 1);
-                TFHE.allow(dieValue, address(this));
-                TFHE.allow(dieValue, game.alivePlayers[i]);
-                playerDice[game.id][game.alivePlayers[i]][j] = TFHE.add(dieValue, 1);
+                playerDice[game.id][game.alivePlayers[i]][j] = dieValue;
+                Impl.reencrypt(euint8.unwrap(dieValue), publicKeys[game.alivePlayers[i]]);
             }
         }
 
@@ -163,5 +165,14 @@ contract DeGame {
             game.alivePlayers[i] = game.alivePlayers[i + 1];
         }
         delete game.alivePlayers[game.alivePlayers.length - 1];
+    }
+
+    function bytesToBytes32(bytes calldata b) private pure returns (bytes32) {
+        bytes32 out;
+
+        for (uint i = 0; i < 32; i++) {
+            out |= bytes32(b[i] & 0xFF) >> (i * 8);
+        }
+        return out;
     }
 }
