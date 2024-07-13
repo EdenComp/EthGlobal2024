@@ -1,12 +1,30 @@
-import { http } from "viem";
-import { mainnet, sepolia } from "viem/chains";
+import { http, type Chain } from "viem";
 import { createConfig } from "wagmi";
 
 export default createConfig({
-	chains: [mainnet, sepolia],
+	chains: [
+		{
+			id: 9090,
+			name: "Inco",
+			nativeCurrency: {
+				name: "Inco",
+				symbol: "INCO",
+				decimals: 18,
+			},
+			rpcUrls: {
+				default: { http: ["https://testnet.inco.org"] },
+			},
+			blockExplorers: {
+				default: {
+					url: "https://explorer.testnet.inco.org/",
+					name: "Inco's blockscout",
+				},
+			},
+		} as const satisfies Chain,
+	],
 	multiInjectedProviderDiscovery: false,
 	transports: {
-		[mainnet.id]: http(),
-		[sepolia.id]: http(),
+		[9090]: http(),
 	},
 });
+

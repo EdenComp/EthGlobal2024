@@ -1,5 +1,6 @@
 import Layout from "@/components/Layout.tsx";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
+import type { ReactElement } from "react";
 
 const TeamCard = ({
 	profile,
@@ -9,6 +10,7 @@ const TeamCard = ({
 		<button
 			onClick={() => window.open(profile.link, "_blank")}
 			className="focus:outline-none group"
+			type="button"
 			key={index}
 		>
 			<div
