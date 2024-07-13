@@ -1,4 +1,5 @@
 import DiceLogo from "@/assets/DiceLogo.png";
+import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
 import type { ReactElement } from "react";
 
 export default function Navbar(): ReactElement {
@@ -33,6 +34,7 @@ export default function Navbar(): ReactElement {
 						</a>
 					))}
 				</div>
+				<DynamicWidget />
 			</div>
 		</header>
 	);

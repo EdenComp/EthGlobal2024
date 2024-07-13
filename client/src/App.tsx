@@ -1,14 +1,11 @@
-import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
-import {
-	DynamicContextProvider,
-	DynamicWidget,
-} from "@dynamic-labs/sdk-react-core";
-import { DynamicWagmiConnector } from "@dynamic-labs/wagmi-connector";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import NotFound from "@/pages/404.tsx";
 import Home from "@/pages/Home.tsx";
 import Playground from "@/pages/PlayGround.tsx";
 import Team from "@/pages/Team.tsx";
+import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
+import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
+import { DynamicWagmiConnector } from "@dynamic-labs/wagmi-connector";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Route, Routes } from "react-router-dom";
 import { WagmiProvider } from "wagmi";
 
@@ -19,7 +16,6 @@ const queryClient = new QueryClient();
 
 export default function App() {
 	return (
-
 		<DynamicContextProvider
 			settings={{
 				environmentId: import.meta.env.VITE_DYNAMIC_ENVIRONMENT_ID,
@@ -50,7 +46,6 @@ export default function App() {
 			<WagmiProvider config={config}>
 				<QueryClientProvider client={queryClient}>
 					<DynamicWagmiConnector>
-						<DynamicWidget />
 						<Routes>
 							<Route path="/" element={<Home />} />
 							<Route path="/lobby" element={<Lobby />} />
