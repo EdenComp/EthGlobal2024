@@ -99,7 +99,7 @@ contract DeGame is EIP712WithModifier {
         games[id].roundNumber = 0;
         games[id].turnNumber = 0;
         playerDice[id][msg.sender] = new euint8[](DICE_NUMBER);
-
+        playerGame[msg.sender] = id;
         emit GameCreated(id, msg.sender);
     }
 
@@ -113,6 +113,7 @@ contract DeGame is EIP712WithModifier {
         game.alivePlayers.push(msg.sender);
         playerDice[game.id][msg.sender] = new euint8[](DICE_NUMBER);
         emit GameUpdated(game.id, uint8(game.alivePlayers.length));
+        playerGame[msg.sender] = game.id;
     }
 
     function leaveGame() public {
@@ -131,7 +132,7 @@ contract DeGame is EIP712WithModifier {
                 break;
             }
         }
-
+        playerGame[msg.sender] = 0;
         emit GameUpdated(game.id, uint8(game.alivePlayers.length));
     }
 
@@ -245,10 +246,10 @@ contract DeGame is EIP712WithModifier {
     }
 
     function removePlayer(Game storage game, uint8 index) private {
-        for (uint i = index; i < game.alivePlayers.length-1; i++){
+        for (uint i = index; i < game.alivePlayers.length-1; i++) {
             game.alivePlayers[i] = game.alivePlayers[i + 1];
         }
-        delete game.alivePlayers[game.alivePlayers.length - 1];
+        game.alivePlayers.pop();
     }
 
     function bytesToBytes32(bytes calldata b) private pure returns (bytes32) {

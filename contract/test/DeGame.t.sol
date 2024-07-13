@@ -5,12 +5,20 @@ import {Test} from "forge-std/Test.sol";
 import {DeGame} from "../src/DeGame.sol";
 
 contract Player {
+
+    function createGameAsPlayer(DeGame game) public {
+        game.createGame();
+    }
+
     function joinAsPlayer(
         DeGame game,
-        uint256 gameId,
-        bytes calldata publicKey
+        uint256 gameId
     ) public {
-        game.joinGame(gameId, publicKey);
+        game.joinGame(gameId);
+    }
+
+    function leaveAsPlayer(DeGame game) public {
+        game.leaveGame();
     }
 }
 
@@ -23,10 +31,13 @@ contract DeGameTest is Test {
     }
 
     function test_CreateGame() public {
+        Player owner1 = new Player();
+        Player owner2 = new Player();
+
         assertEq(deGame.getAvailableGames().length, 1);
-        deGame.createGame();
+        owner1.createGameAsPlayer(deGame);
         assertEq(deGame.getAvailableGames().length, 2);
-        deGame.createGame();
+        owner2.createGameAsPlayer(deGame);
         assertEq(deGame.getAvailableGames().length, 3);
     }
 
@@ -37,12 +48,12 @@ contract DeGameTest is Test {
         Player player2 = new Player();
         Player player3 = new Player();
 
-        idGame = deGame.getAvailableGames()[0];
+        idGame = deGame.getAvailableGames()[0].id;
         game = deGame.getGame(idGame);
         assertEq(game.alivePlayers.length, 1);
-        player1.joinAsPlayer(deGame, idGame, "7afWWaYpFwnJtfFEH5iog4wc3ySaGbbX");
-        player2.joinAsPlayer(deGame, idGame, "iNaoc7zGopJEX7Rar6VUbYHYatvq3DJv");
-        player3.joinAsPlayer(deGame, idGame, "vj9B68HkdgGenGPmGLo2yVmfzXaBw7xP");
+        player1.joinAsPlayer(deGame, idGame);
+        player2.joinAsPlayer(deGame, idGame);
+        player3.joinAsPlayer(deGame, idGame);
         game = deGame.getGame(idGame);
         assertEq(game.alivePlayers.length, 4);
     }
@@ -59,18 +70,43 @@ contract DeGameTest is Test {
         DeGame.Game memory game;
         Player ply1 = new Player();
         Player ply2 = new Player();
-        uint256 idGame = deGame.getAvailableGames()[0];
+        uint256 idGame = deGame.getAvailableGames()[0].id;
 
-        ply1.joinAsPlayer(deGame, idGame, "7afWWaYpFwnJtfFEH5iog4wc3ySaGbbX");
-        ply2.joinAsPlayer(deGame, idGame, "iNaoc7zGopJEX7Rar6VUbYHYatvq3DJv");
+        ply1.joinAsPlayer(deGame, idGame);
+        ply2.joinAsPlayer(deGame, idGame);
         game = deGame.getGame(idGame);
-        assertEq(game.rounds.length, 0);
+        assertEq(game.roundNumber, 0);
         deGame.startGame(idGame);
-        assertEq(game.rounds.length, 1);
+        game = deGame.getGame(idGame);
+        assertEq(game.roundNumber, 1);
     }
 
     function test_StartGameInsufficientPlayers() public {
         // TODO: fix problem with vm.expectRevert();
         // deGame.startGame(deGame.getAvailableGames()[0]);
+    }
+
+    function test_LeaveGame() public {
+        Player pl = new Player();
+        uint256 idGame = deGame.getAvailableGames()[0].id;
+        DeGame.Game memory game;
+
+        pl.joinAsPlayer(deGame, idGame);
+        game = deGame.getGame(idGame);
+        assertEq(game.alivePlayers.length, 2);
+        pl.leaveAsPlayer(deGame);
+        game = deGame.getGame(idGame);
+        assertEq(game.alivePlayers.length, 1);
+    }
+
+    function test_MakeDiceCall() public {
+        /*Player ply1 = new Player();
+        Player ply2 = new Player();
+        Player ply3 = new Player();
+        uint256 idGame = deGame.getAvailableGames()[0].id;
+
+        ply1.joinAsPlayer(deGame, idGame);
+        ply2.joinAsPlayer(deGame, idGame);
+        ply3.joinAsPlayer(deGame, idGame);*/
     }
 }
