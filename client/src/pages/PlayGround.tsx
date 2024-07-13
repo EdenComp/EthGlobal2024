@@ -76,7 +76,7 @@ export default function Playground(): ReactElement {
 			(a, b) => b.dices.length - a.dices.length,
 		);
 		setSortedPlayers(newSortedPlayers);
-	}, [players]);
+	}, []);
 
 	const updateCurrentPlayer = (step: number) => {
 		const totalPlayers = players.length;
