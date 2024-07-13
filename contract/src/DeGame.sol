@@ -130,7 +130,6 @@ contract DeGame is EIP712WithModifier {
                 break;
             }
         }
-
         emit GameUpdated(game.id, uint8(game.alivePlayers.length));
     }
 
@@ -251,7 +250,7 @@ contract DeGame is EIP712WithModifier {
     }
 
     function removePlayer(Game storage game, uint8 index) private {
-        for (uint i = index; i < game.alivePlayers.length-1; i++){
+        for (uint i = index; i < game.alivePlayers.length-1; i++) {
             game.alivePlayers[i] = game.alivePlayers[i + 1];
         }
         game.alivePlayers.pop();
