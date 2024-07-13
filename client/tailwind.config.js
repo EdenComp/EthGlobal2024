@@ -16,6 +16,33 @@ module.exports = {
 				"2xl": "1400px",
 			},
 		},
+		fill: {
+			current: 'currentColor',
+		},
+		colors: {
+			neutral: {
+				white: '#FFFFFF',
+				grey_1: '#ADADAD',
+				grey_2: '#5C5C5C',
+				black: '#000000',
+			},
+			background: {
+				primary: '#2A2A2A',
+				secondary: '#161616',
+				tertiary: '#101010',
+			},
+			orange: {
+				100: '#FFECB3',
+				200: '#FFE082',
+				300: '#FFD54F',
+				400: '#FFCA28',
+				500: '#FFC107',
+				600: '#FFB300',
+				700: '#FFA000',
+				800: '#FF8F00',
+				900: '#FF6F00',
+			},
+		},
 		extend: {
 			keyframes: {
 				"accordion-down": {
