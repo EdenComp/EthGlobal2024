@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.26;
 
-import "fhevm/lib/Impl.sol";
 import "fhevm/abstracts/EIP712WithModifier.sol";
+import "fhevm/lib/TFHE.sol";
 
 contract DeGame is EIP712WithModifier {
     struct Turn {
@@ -48,7 +48,7 @@ contract DeGame is EIP712WithModifier {
     mapping(address => uint256) public playerGame;
 
     uint256 private nonce = 0;
-    mapping(uint256 => mapping(address => euint8[])) private playerDice;
+    mapping(address => euint8[]) private playerDice;
 
     constructor() EIP712WithModifier("DeGame", "1") {}
 
@@ -79,11 +79,11 @@ contract DeGame is EIP712WithModifier {
         require(game.owner != address(0), "Game does not exist");
         require(game.roundNumber > 0, "Game did not start");
         require(game.alivePlayers.length > 1, "Game ended");
-        require(playerDice[gameId][msg.sender].length > 0, "You are not in the game");
+        require(playerDice[msg.sender].length > 0, "You are not in the game");
 
-        bytes[] memory dice = new bytes[](playerDice[gameId][msg.sender].length);
-        for (uint i = 0; i < playerDice[gameId][msg.sender].length; i++) {
-            dice[i] = TFHE.reencrypt(playerDice[gameId][msg.sender][i], publicKey);
+        bytes[] memory dice = new bytes[](playerDice[msg.sender].length);
+        for (uint i = 0; i < playerDice[msg.sender].length; i++) {
+            dice[i] = TFHE.reencrypt(playerDice[msg.sender][i], publicKey);
         }
         return dice;
     }
@@ -96,9 +96,6 @@ contract DeGame is EIP712WithModifier {
         games[id].id = id;
         games[id].owner = msg.sender;
         games[id].alivePlayers.push(msg.sender);
-        games[id].roundNumber = 0;
-        games[id].turnNumber = 0;
-        playerDice[id][msg.sender] = new euint8[](DICE_NUMBER);
         playerGame[msg.sender] = id;
 
         emit GameCreated(id, msg.sender);
@@ -109,11 +106,11 @@ contract DeGame is EIP712WithModifier {
         Game storage game = games[gameId];
         require(game.owner != address(0), "Game does not exist");
         require(game.roundNumber == 0, "Game already started");
-        require(playerDice[game.id][msg.sender].length == 0, "Already joined");
+        require(playerDice[msg.sender].length == 0, "Already joined");
 
         game.alivePlayers.push(msg.sender);
-        playerDice[game.id][msg.sender] = new euint8[](DICE_NUMBER);
         playerGame[msg.sender] = game.id;
+
         emit GameUpdated(game.id, uint8(game.alivePlayers.length));
     }
 
@@ -142,6 +139,10 @@ contract DeGame is EIP712WithModifier {
         require(game.owner == msg.sender, "Only the owner can start the game");
         require(game.roundNumber == 0, "Game already started");
         require(game.alivePlayers.length > 1, "Not enough players");
+
+        for (uint8 i = 0; i < game.alivePlayers.length; i++) {
+            playerDice[game.alivePlayers[i]] = new euint8[](DICE_NUMBER);
+        }
 
         emit GameStarted(game.id);
         startTurn(game);
@@ -179,9 +180,9 @@ contract DeGame is EIP712WithModifier {
     function isLiar(Game storage game, uint16 nbDice, uint16 dieValue) private view returns (bool) {
         uint16 count = 0;
         for (uint8 i = 0; i < game.alivePlayers.length && count < nbDice; i++) {
-            uint8 playerDiceCount = uint8(playerDice[game.id][game.alivePlayers[i]].length);
+            uint8 playerDiceCount = uint8(playerDice[game.alivePlayers[i]].length);
             for (uint j = 0; j < playerDiceCount && count < nbDice; j++) {
-                uint8 currentDieValue = uint8(TFHE.decrypt(playerDice[game.id][game.alivePlayers[i]][j]));
+                uint8 currentDieValue = uint8(TFHE.decrypt(playerDice[game.alivePlayers[i]][j]));
                 if (currentDieValue == dieValue) {
                     count++;
                 }
@@ -218,21 +219,21 @@ contract DeGame is EIP712WithModifier {
         game.roundNumber += 1;
         game.turnNumber = 0;
 
-//        for (uint8 i = 0; i < game.alivePlayers.length; i++) {
-//            for (uint j = 0; j < playerDice[game.id][game.alivePlayers[i]].length; j++) {
-//                playerDice[game.id][game.alivePlayers[i]][j] = TFHE.add(TFHE.randEuint8(), TFHE.asEuint8(1));
-//            }
-//        }
+        for (uint8 i = 0; i < game.alivePlayers.length; i++) {
+            for (uint j = 0; j < playerDice[game.alivePlayers[i]].length; j++) {
+                playerDice[game.alivePlayers[i]][j] = TFHE.add(TFHE.rem(TFHE.randEuint8(), 6), TFHE.asEuint8(1));
+            }
+        }
 
         emit TurnStarted(game.id);
     }
 
     function endTurn(Game storage game, bool liar) private {
         uint8 loserPlayerIndex = liar ? getPreviousPlayer(game) : game.turnPlayerIndex;
-        bool eliminated = playerDice[game.id][game.alivePlayers[loserPlayerIndex]].length == 0;
+        bool eliminated = playerDice[game.alivePlayers[loserPlayerIndex]].length == 0;
 
         emit TurnEnded(game.id, game.alivePlayers[loserPlayerIndex]);
-        playerDice[game.id][game.alivePlayers[loserPlayerIndex]].pop();
+        playerDice[game.alivePlayers[loserPlayerIndex]].pop();
         if (eliminated) {
             delete playerGame[game.alivePlayers[loserPlayerIndex]];
             removePlayer(game, loserPlayerIndex);
