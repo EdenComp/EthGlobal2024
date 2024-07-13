@@ -22,7 +22,7 @@ module.exports = {
 		colors: {
 			neutral: {
 				white: "#F9F9F9",
-				grey_1: "#DDDDDD",
+				grey_1: "#D9D9D9",
 				grey_2: "#5C5C5C",
 				black: "#000000",
 			},
