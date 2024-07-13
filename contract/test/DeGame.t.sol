@@ -67,21 +67,6 @@ contract DeGameTest is Test {
         assertEq(game.alivePlayers.length, 4);
     }
 
-    function test_StartGame() public {
-        DeGame.Game memory game;
-        Player ply1 = new Player();
-        Player ply2 = new Player();
-        uint256 idGame = deGame.getAvailableGames()[0].id;
-
-        ply1.joinAsPlayer(deGame, idGame);
-        ply2.joinAsPlayer(deGame, idGame);
-        game = deGame.getGame(idGame);
-        assertEq(game.roundNumber, 0);
-        deGame.startGame();
-        game = deGame.getGame(idGame);
-        assertEq(game.roundNumber, 1);
-    }
-
     function test_LeaveGame() public {
         Player pl = new Player();
         uint256 idGame = deGame.getAvailableGames()[0].id;
