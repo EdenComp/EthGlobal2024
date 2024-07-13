@@ -1,4 +1,6 @@
 import abi from "@/abi";
+import config from "@/config";
+import { readContract } from "@wagmi/core";
 import type { Log } from "viem";
 import {
 	useReadContract,
@@ -54,3 +56,14 @@ export const useWriteDeGameContract = () => {
 		...data,
 	};
 };
+
+export const readDeGameContract = async (
+	functionName: string,
+	args: unknown[] = [],
+) =>
+	readContract(config, {
+		abi,
+		address: import.meta.env.VITE_DEGAME_CONTRACT_ADDRESS,
+		functionName,
+		args,
+	});

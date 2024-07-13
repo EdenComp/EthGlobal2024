@@ -1,86 +1,108 @@
 import { Button } from "@/components/ui/button";
 import {
+	Table,
+	TableBody,
+	TableCaption,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
+import {
 	useListenForDeGameEvent,
 	useReadDeGameContract,
 	useWriteDeGameContract,
 } from "@/hooks/degame";
-import { shortenHexString } from "@/utils";
 import { useEffect, useState } from "react";
-import { numberToHex } from "viem";
-import { useSwitchChain } from "wagmi";
+import { useNavigate } from "react-router-dom";
+import { type Hex, numberToHex } from "viem";
+import { useAccount } from "wagmi";
+
+export type Game = {
+	id: bigint;
+	owner: Hex;
+	playerCount: number;
+};
 
 export default function Lobby() {
-	const [availableGameIds, setAvailableGameIds] = useState<bigint[]>([]);
-	const [gameId, setGameId] = useState<number>();
-	const { writeDeGameContractAsync } = useWriteDeGameContract();
-	useListenForDeGameEvent<{ args: { creator: string; gameId: bigint } }>(
-		"GameCreated",
-		(log) =>
-			setAvailableGameIds((prev) => [
-				...prev,
-				// @ts-ignore
-				log.args.gameId,
-			]),
+	const [availableGames, setAvailableGames] = useState<Game[]>([]);
+	const { isLoading, data } = useReadDeGameContract("getAvailableGames");
+	const { writeDeGameContract } = useWriteDeGameContract();
+	const { address } = useAccount();
+	const navigate = useNavigate();
+
+	useListenForDeGameEvent<{
+		args: { gameId: bigint; creator: Hex };
+	}>("GameCreated", ({ args: { gameId: id, creator: owner } }) => {
+		setAvailableGames((prev) => [...prev, { id, owner, playerCount: 1 }]);
+		if (owner === address) navigate(`/game/${numberToHex(id)}`);
+	});
+
+	useListenForDeGameEvent<{ args: { gameId: bigint; playerCount: number } }>(
+		"GameUpdated",
+		({ args: { gameId: id, playerCount } }) => {
+			setAvailableGames((prev) =>
+				prev.map((game) => (game.id === id ? { ...game, playerCount } : game)),
+			);
+		},
 	);
-	const {
-		data: availableGames,
-		isLoading: areAvailableGamesLoading,
-		isSuccess: areAvailableGamesSuccess,
-	} = useReadDeGameContract("getAvailableGames");
+
 	useEffect(() => {
-		if (
-			availableGames &&
-			Array.isArray(availableGames) &&
-			availableGames.every((v) => typeof v === "bigint")
-		)
-			setAvailableGameIds(availableGames);
-	}, [availableGames]);
-	const { switchChainAsync } = useSwitchChain();
-	useEffect(() => {
-		switchChainAsync({ chainId: 9090 });
-	}, [switchChainAsync]);
+		if (data) setAvailableGames(data as Game[]);
+	}, [data]);
 
 	return (
-		<>
-			<h1>
-				{`Contract : ${shortenHexString(import.meta.env.VITE_DEGAME_CONTRACT_ADDRESS)}`}
-			</h1>
-			{areAvailableGamesLoading ? (
-				<h1>Loading available games...</h1>
-			) : areAvailableGamesSuccess ? (
-				<p>
-					{availableGameIds
-						.map((id) => shortenHexString(numberToHex(id)))
-						.join(", ") || "No available games"}
-				</p>
-			) : (
-				<h1>An error occurred during available games loading</h1>
-			)}
+		<div className="flex flex-col items-center gap-y-10">
+			{isLoading ? <h1>Loading...</h1> : <Games games={availableGames} />}
 			<Button
-				onClick={async () => {
-					console.log(
-						"createGame:",
-						await writeDeGameContractAsync("createGame"),
-					);
-				}}
+				className="w-fit"
+				size="lg"
+				onClick={() => writeDeGameContract("createGame")}
+				type="button"
 			>
-				Create Game
+				Create game
 			</Button>
-			<input
-				type="number"
-				value={gameId}
-				onChange={({ target: { valueAsNumber } }) =>
-					setGameId(Number.isNaN(valueAsNumber) ? undefined : valueAsNumber)
-				}
-			/>
-			<Button
-				onClick={async () => {
-					await writeDeGameContractAsync("joinGame", [BigInt(gameId ?? 0)]);
-				}}
-				disabled={gameId === undefined}
-			>
-				Join Game
-			</Button>
-		</>
+		</div>
+	);
+}
+
+function Games({ games }: { games: Game[] }) {
+	const { status } = useAccount();
+	const { writeDeGameContractAsync } = useWriteDeGameContract();
+	const navigate = useNavigate();
+	return (
+		<Table>
+			<TableCaption>Available games.</TableCaption>
+			<TableHeader>
+				<TableRow>
+					<TableHead className="w-[100px]">ID</TableHead>
+					<TableHead>Owner Address</TableHead>
+					<TableHead>Player Count</TableHead>
+				</TableRow>
+			</TableHeader>
+			<TableBody>
+				{games.map(({ id, owner, playerCount }) => (
+					<TableRow key={id}>
+						<TableCell className="font-medium">{numberToHex(id)}</TableCell>
+						<TableCell>{owner}</TableCell>
+						<TableCell>{playerCount}/256</TableCell>
+						<TableCell className="text-right">
+							<Button
+								size="lg"
+								onClick={() => {
+									writeDeGameContractAsync("joinGame", [id]).then(() =>
+										navigate(`/game/${numberToHex(id)}`),
+									);
+								}}
+								type="button"
+								disabled={status !== "connected"}
+							>
+								Join
+							</Button>
+						</TableCell>
+					</TableRow>
+				))}
+			</TableBody>
+		</Table>
 	);
 }
