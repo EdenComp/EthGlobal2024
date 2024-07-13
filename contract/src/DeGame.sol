@@ -28,11 +28,12 @@ contract DeGame is EIP712WithModifier {
 
     struct AvailableGame {
         uint256 id;
-        address creator;
+        address owner;
         uint8 playerCount;
     }
 
     event GameCreated(uint256 gameId, address creator);
+    event GameUpdated(uint256 gameId, uint8 playerCount);
     event GameStarted(uint256 gameId);
     event TurnStarted(uint256 gameId);
     event DiceCallMade(uint256 gameId, address player, uint16 nbDice, uint8 dieValue);
@@ -111,6 +112,7 @@ contract DeGame is EIP712WithModifier {
 
         game.alivePlayers.push(msg.sender);
         playerDice[game.id][msg.sender] = new euint8[](DICE_NUMBER);
+        emit GameUpdated(game.id, uint8(game.alivePlayers.length));
     }
 
     function leaveGame() public {
@@ -129,6 +131,8 @@ contract DeGame is EIP712WithModifier {
                 break;
             }
         }
+
+        emit GameUpdated(game.id, uint8(game.alivePlayers.length));
     }
 
     function startGame(uint256 gameId) public {
