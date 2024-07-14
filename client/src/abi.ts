@@ -1,10 +1,20 @@
 const abi = [
-	{ type: "constructor", inputs: [], stateMutability: "nonpayable" },
+	{
+		type: "constructor",
+		inputs: [],
+		stateMutability: "nonpayable",
+	},
 	{
 		type: "function",
 		name: "DICE_NUMBER",
 		inputs: [],
-		outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
+		outputs: [
+			{
+				name: "",
+				type: "uint256",
+				internalType: "uint256",
+			},
+		],
 		stateMutability: "view",
 	},
 	{
@@ -19,33 +29,99 @@ const abi = [
 		name: "eip712Domain",
 		inputs: [],
 		outputs: [
-			{ name: "fields", type: "bytes1", internalType: "bytes1" },
-			{ name: "name", type: "string", internalType: "string" },
-			{ name: "version", type: "string", internalType: "string" },
-			{ name: "chainId", type: "uint256", internalType: "uint256" },
-			{ name: "verifyingContract", type: "address", internalType: "address" },
-			{ name: "salt", type: "bytes32", internalType: "bytes32" },
-			{ name: "extensions", type: "uint256[]", internalType: "uint256[]" },
+			{
+				name: "fields",
+				type: "bytes1",
+				internalType: "bytes1",
+			},
+			{
+				name: "name",
+				type: "string",
+				internalType: "string",
+			},
+			{
+				name: "version",
+				type: "string",
+				internalType: "string",
+			},
+			{
+				name: "chainId",
+				type: "uint256",
+				internalType: "uint256",
+			},
+			{
+				name: "verifyingContract",
+				type: "address",
+				internalType: "address",
+			},
+			{
+				name: "salt",
+				type: "bytes32",
+				internalType: "bytes32",
+			},
+			{
+				name: "extensions",
+				type: "uint256[]",
+				internalType: "uint256[]",
+			},
 		],
 		stateMutability: "view",
 	},
 	{
 		type: "function",
 		name: "gameIds",
-		inputs: [{ name: "", type: "uint256", internalType: "uint256" }],
-		outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
+		inputs: [
+			{
+				name: "",
+				type: "uint256",
+				internalType: "uint256",
+			},
+		],
+		outputs: [
+			{
+				name: "",
+				type: "uint256",
+				internalType: "uint256",
+			},
+		],
 		stateMutability: "view",
 	},
 	{
 		type: "function",
 		name: "games",
-		inputs: [{ name: "", type: "uint256", internalType: "uint256" }],
+		inputs: [
+			{
+				name: "",
+				type: "uint256",
+				internalType: "uint256",
+			},
+		],
 		outputs: [
-			{ name: "id", type: "uint256", internalType: "uint256" },
-			{ name: "owner", type: "address", internalType: "address" },
-			{ name: "turnPlayerIndex", type: "uint8", internalType: "uint8" },
-			{ name: "roundNumber", type: "uint16", internalType: "uint16" },
-			{ name: "turnNumber", type: "uint16", internalType: "uint16" },
+			{
+				name: "id",
+				type: "uint256",
+				internalType: "uint256",
+			},
+			{
+				name: "owner",
+				type: "address",
+				internalType: "address",
+			},
+			{
+				name: "turnPlayerIndex",
+				type: "uint8",
+				internalType: "uint8",
+			},
+			{
+				name: "roundNumber",
+				type: "uint16",
+				internalType: "uint16",
+			},
+			{
+				name: "turnNumber",
+				type: "uint16",
+				internalType: "uint16",
+			},
 		],
 		stateMutability: "view",
 	},
@@ -59,9 +135,21 @@ const abi = [
 				type: "tuple[]",
 				internalType: "struct DeGame.AvailableGame[]",
 				components: [
-					{ name: "id", type: "uint256", internalType: "uint256" },
-					{ name: "owner", type: "address", internalType: "address" },
-					{ name: "playerCount", type: "uint8", internalType: "uint8" },
+					{
+						name: "id",
+						type: "uint256",
+						internalType: "uint256",
+					},
+					{
+						name: "owner",
+						type: "address",
+						internalType: "address",
+					},
+					{
+						name: "playerCount",
+						type: "uint8",
+						internalType: "uint8",
+					},
 				],
 			},
 		],
@@ -71,33 +159,77 @@ const abi = [
 		type: "function",
 		name: "getDice",
 		inputs: [
-			{ name: "gameId", type: "uint256", internalType: "uint256" },
-			{ name: "publicKey", type: "bytes32", internalType: "bytes32" },
-			{ name: "signature", type: "bytes", internalType: "bytes" },
+			{
+				name: "gameId",
+				type: "uint256",
+				internalType: "uint256",
+			},
+			{
+				name: "publicKey",
+				type: "bytes32",
+				internalType: "bytes32",
+			},
+			{
+				name: "signature",
+				type: "bytes",
+				internalType: "bytes",
+			},
 		],
-		outputs: [{ name: "", type: "bytes[]", internalType: "bytes[]" }],
+		outputs: [
+			{
+				name: "",
+				type: "bytes[]",
+				internalType: "bytes[]",
+			},
+		],
 		stateMutability: "view",
 	},
 	{
 		type: "function",
 		name: "getGame",
-		inputs: [{ name: "gameId", type: "uint256", internalType: "uint256" }],
+		inputs: [
+			{
+				name: "gameId",
+				type: "uint256",
+				internalType: "uint256",
+			},
+		],
 		outputs: [
 			{
 				name: "",
 				type: "tuple",
 				internalType: "struct DeGame.Game",
 				components: [
-					{ name: "id", type: "uint256", internalType: "uint256" },
-					{ name: "owner", type: "address", internalType: "address" },
+					{
+						name: "id",
+						type: "uint256",
+						internalType: "uint256",
+					},
+					{
+						name: "owner",
+						type: "address",
+						internalType: "address",
+					},
 					{
 						name: "alivePlayers",
 						type: "address[]",
 						internalType: "address[]",
 					},
-					{ name: "turnPlayerIndex", type: "uint8", internalType: "uint8" },
-					{ name: "roundNumber", type: "uint16", internalType: "uint16" },
-					{ name: "turnNumber", type: "uint16", internalType: "uint16" },
+					{
+						name: "turnPlayerIndex",
+						type: "uint8",
+						internalType: "uint8",
+					},
+					{
+						name: "roundNumber",
+						type: "uint16",
+						internalType: "uint16",
+					},
+					{
+						name: "turnNumber",
+						type: "uint16",
+						internalType: "uint16",
+					},
 					{
 						name: "rounds",
 						type: "tuple[]",
@@ -108,12 +240,28 @@ const abi = [
 								type: "tuple[]",
 								internalType: "struct DeGame.Turn[]",
 								components: [
-									{ name: "player", type: "address", internalType: "address" },
-									{ name: "nbDice", type: "uint16", internalType: "uint16" },
-									{ name: "dieValue", type: "uint8", internalType: "uint8" },
+									{
+										name: "player",
+										type: "address",
+										internalType: "address",
+									},
+									{
+										name: "nbDice",
+										type: "uint16",
+										internalType: "uint16",
+									},
+									{
+										name: "dieValue",
+										type: "uint8",
+										internalType: "uint8",
+									},
 								],
 							},
-							{ name: "liar", type: "bool", internalType: "bool" },
+							{
+								name: "liar",
+								type: "bool",
+								internalType: "bool",
+							},
 						],
 					},
 				],
@@ -124,23 +272,49 @@ const abi = [
 	{
 		type: "function",
 		name: "getPlayerGame",
-		inputs: [],
+		inputs: [
+			{
+				name: "addr",
+				type: "address",
+				internalType: "address",
+			},
+		],
 		outputs: [
 			{
 				name: "",
 				type: "tuple",
 				internalType: "struct DeGame.Game",
 				components: [
-					{ name: "id", type: "uint256", internalType: "uint256" },
-					{ name: "owner", type: "address", internalType: "address" },
+					{
+						name: "id",
+						type: "uint256",
+						internalType: "uint256",
+					},
+					{
+						name: "owner",
+						type: "address",
+						internalType: "address",
+					},
 					{
 						name: "alivePlayers",
 						type: "address[]",
 						internalType: "address[]",
 					},
-					{ name: "turnPlayerIndex", type: "uint8", internalType: "uint8" },
-					{ name: "roundNumber", type: "uint16", internalType: "uint16" },
-					{ name: "turnNumber", type: "uint16", internalType: "uint16" },
+					{
+						name: "turnPlayerIndex",
+						type: "uint8",
+						internalType: "uint8",
+					},
+					{
+						name: "roundNumber",
+						type: "uint16",
+						internalType: "uint16",
+					},
+					{
+						name: "turnNumber",
+						type: "uint16",
+						internalType: "uint16",
+					},
 					{
 						name: "rounds",
 						type: "tuple[]",
@@ -151,12 +325,28 @@ const abi = [
 								type: "tuple[]",
 								internalType: "struct DeGame.Turn[]",
 								components: [
-									{ name: "player", type: "address", internalType: "address" },
-									{ name: "nbDice", type: "uint16", internalType: "uint16" },
-									{ name: "dieValue", type: "uint8", internalType: "uint8" },
+									{
+										name: "player",
+										type: "address",
+										internalType: "address",
+									},
+									{
+										name: "nbDice",
+										type: "uint16",
+										internalType: "uint16",
+									},
+									{
+										name: "dieValue",
+										type: "uint8",
+										internalType: "uint8",
+									},
 								],
 							},
-							{ name: "liar", type: "bool", internalType: "bool" },
+							{
+								name: "liar",
+								type: "bool",
+								internalType: "bool",
+							},
 						],
 					},
 				],
@@ -167,7 +357,13 @@ const abi = [
 	{
 		type: "function",
 		name: "joinGame",
-		inputs: [{ name: "gameId", type: "uint256", internalType: "uint256" }],
+		inputs: [
+			{
+				name: "gameId",
+				type: "uint256",
+				internalType: "uint256",
+			},
+		],
 		outputs: [],
 		stateMutability: "nonpayable",
 	},
@@ -182,9 +378,16 @@ const abi = [
 		type: "function",
 		name: "makeDiceCall",
 		inputs: [
-			{ name: "gameId", type: "uint256", internalType: "uint256" },
-			{ name: "nbDice", type: "uint16", internalType: "uint16" },
-			{ name: "dieValue", type: "uint8", internalType: "uint8" },
+			{
+				name: "nbDice",
+				type: "uint16",
+				internalType: "uint16",
+			},
+			{
+				name: "dieValue",
+				type: "uint8",
+				internalType: "uint8",
+			},
 		],
 		outputs: [],
 		stateMutability: "nonpayable",
@@ -192,21 +395,33 @@ const abi = [
 	{
 		type: "function",
 		name: "makeLiarCall",
-		inputs: [{ name: "gameId", type: "uint256", internalType: "uint256" }],
+		inputs: [],
 		outputs: [],
 		stateMutability: "nonpayable",
 	},
 	{
 		type: "function",
 		name: "playerGame",
-		inputs: [{ name: "", type: "address", internalType: "address" }],
-		outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
+		inputs: [
+			{
+				name: "",
+				type: "address",
+				internalType: "address",
+			},
+		],
+		outputs: [
+			{
+				name: "",
+				type: "uint256",
+				internalType: "uint256",
+			},
+		],
 		stateMutability: "view",
 	},
 	{
 		type: "function",
 		name: "startGame",
-		inputs: [{ name: "gameId", type: "uint256", internalType: "uint256" }],
+		inputs: [],
 		outputs: [],
 		stateMutability: "nonpayable",
 	},
@@ -241,7 +456,12 @@ const abi = [
 		],
 		anonymous: false,
 	},
-	{ type: "event", name: "EIP712DomainChanged", inputs: [], anonymous: false },
+	{
+		type: "event",
+		name: "EIP712DomainChanged",
+		inputs: [],
+		anonymous: false,
+	},
 	{
 		type: "event",
 		name: "GameCreated",
@@ -253,7 +473,7 @@ const abi = [
 				internalType: "uint256",
 			},
 			{
-				name: "creator",
+				name: "owner",
 				type: "address",
 				indexed: false,
 				internalType: "address",
@@ -340,7 +560,12 @@ const abi = [
 				indexed: false,
 				internalType: "uint8",
 			},
-			{ name: "liar", type: "bool", indexed: false, internalType: "bool" },
+			{
+				name: "liar",
+				type: "bool",
+				indexed: false,
+				internalType: "bool",
+			},
 		],
 		anonymous: false,
 	},
@@ -376,22 +601,48 @@ const abi = [
 		],
 		anonymous: false,
 	},
-	{ type: "error", name: "ECDSAInvalidSignature", inputs: [] },
+	{
+		type: "error",
+		name: "ECDSAInvalidSignature",
+		inputs: [],
+	},
 	{
 		type: "error",
 		name: "ECDSAInvalidSignatureLength",
-		inputs: [{ name: "length", type: "uint256", internalType: "uint256" }],
+		inputs: [
+			{
+				name: "length",
+				type: "uint256",
+				internalType: "uint256",
+			},
+		],
 	},
 	{
 		type: "error",
 		name: "ECDSAInvalidSignatureS",
-		inputs: [{ name: "s", type: "bytes32", internalType: "bytes32" }],
+		inputs: [
+			{
+				name: "s",
+				type: "bytes32",
+				internalType: "bytes32",
+			},
+		],
 	},
-	{ type: "error", name: "InvalidShortString", inputs: [] },
+	{
+		type: "error",
+		name: "InvalidShortString",
+		inputs: [],
+	},
 	{
 		type: "error",
 		name: "StringTooLong",
-		inputs: [{ name: "str", type: "string", internalType: "string" }],
+		inputs: [
+			{
+				name: "str",
+				type: "string",
+				internalType: "string",
+			},
+		],
 	},
 ];
 

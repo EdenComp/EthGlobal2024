@@ -70,8 +70,8 @@ contract DeGame is EIP712WithModifier {
         return games[gameId];
     }
 
-    function getPlayerGame() public view returns (Game memory) {
-        return games[playerGame[msg.sender]];
+    function getPlayerGame(address addr) public view returns (Game memory) {
+        return games[playerGame[addr]];
     }
 
     function getDice(uint256 gameId, bytes32 publicKey, bytes calldata signature) public view onlySignedPublicKey(publicKey, signature) returns (bytes[] memory) {
