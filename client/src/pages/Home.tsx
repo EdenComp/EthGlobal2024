@@ -18,7 +18,7 @@ export default function Home() {
 				variant={"light"}
 				size={"xl"}
 				onClick={() => {
-					window.location.href = "/lobby";
+					navigate(isConnected ? "/lobby" : "/");
 				}}
 			>
 				<h2 className={"font-bold p-4"}>PLAY</h2>
