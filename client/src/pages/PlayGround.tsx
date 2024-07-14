@@ -17,11 +17,64 @@ interface Player {
 	dices: number[];
 }
 
+const PlayerBoard = ({ player }: { player: Player | undefined }) => {
+	return (
+		player && (
+			<div
+				className={
+					"bg-red-500 rounded-b-2xl size-full flex flex-col justify-center items-center space-y-4 pb-6"
+				}
+			>
+				<h2 className={"font-bold"}>{player.name}</h2>
+				<div
+					className={"h-[40%] w-full flex flex-row items-center justify-around"}
+				>
+					<div className={"flex space-x-8 text-center"}>
+						<img src={DiceU} height={100} width={100} alt={"unknown dice"} />
+						<h1 className={"font-bold"}>x</h1>
+						<input
+							type="number"
+							className={
+								"w-16 h-16 bg-red-400 border-2 border-neutral-white rounded-2xl"
+							}
+							style={{
+								fontSize: "3rem",
+								textAlign: "center",
+								width: "6rem",
+								height: "6rem",
+							}}
+						/>
+					</div>
+					<div className={"flex flex-col space-y-4"}>
+						<Button variant={"light"}>
+							<p className={"body-bold-large"}>Menteur</p>
+						</Button>
+						<Button variant={"light"}>
+							<p className={"body-bold-large px-2.5"}>Valider</p>
+						</Button>
+					</div>
+				</div>
+				<div className={"flex flex-row space-x-4"}>
+					{player.dices.map((dice, index) => (
+						<img
+							key={index}
+							src={diceImages[dice - 1]}
+							height={90}
+							width={90}
+							alt={"dice"}
+						/>
+					))}
+				</div>
+			</div>
+		)
+	);
+};
+
 export default function Playground(): ReactElement {
 	const [turnEnd, setTurnEnd] = useState(false);
 	const [currentPlayer, setCurrentPlayer] = useState(0);
 	const playerName = "aTom.Inc";
-	const players = [
+	const players: Player[] = [
 		{
 			name: "aTom.Inc",
 			dices: [2, 6, 4, 4, 3],
@@ -163,64 +216,8 @@ export default function Playground(): ReactElement {
 					</div>
 				</div>
 				{/* PLAYER BOARD */}
-				<div className={"w-[50%] h-full px-8 pb-6"}>
-					<div
-						className={
-							"bg-red-500 rounded-b-2xl size-full flex flex-col justify-center items-center space-y-4"
-						}
-					>
-						<h2 className={"font-bold"}>
-							{players.find((player) => player.name === playerName)?.name}
-						</h2>
-						<div
-							className={
-								"h-[40%] w-full flex flex-row items-center justify-around"
-							}
-						>
-							<div className={"flex space-x-8 text-center"}>
-								<img
-									src={DiceU}
-									height={100}
-									width={100}
-									alt={"unknown dice"}
-								/>
-								<h1 className={"font-bold"}>x</h1>
-								<input
-									type="number"
-									className={
-										"w-16 h-16 bg-red-400 border-2 border-neutral-white rounded-2xl"
-									}
-									style={{
-										fontSize: "3rem",
-										textAlign: "center",
-										width: "6rem",
-										height: "6rem",
-									}}
-								/>
-							</div>
-							<div className={"flex flex-col space-y-4"}>
-								<Button variant={"light"}>
-									<p className={"body-bold-large"}>Menteur</p>
-								</Button>
-								<Button variant={"light"}>
-									<p className={"body-bold-large px-2.5"}>Valider</p>
-								</Button>
-							</div>
-						</div>
-						<div className={"flex flex-row space-x-4"}>
-							{players
-								.find((player) => player.name === playerName)
-								?.dices.map((dice, index) => (
-									<img
-										key={index}
-										src={diceImages[dice - 1]}
-										height={100}
-										width={100}
-										alt={"dice"}
-									/>
-								))}
-						</div>
-					</div>
+				<div className={"w-[50%] h-full px-8 pb-4"}>
+					<PlayerBoard player={players.find((p) => p.name === playerName)} />
 				</div>
 				{/* PLAYERS LEADERBOARD */}
 				<div className={"w-[25%] h-full p-12"}>
@@ -262,7 +259,11 @@ export default function Playground(): ReactElement {
 				</div>
 			</div>
 			{/* QUICK INFOS */}
-			<div className={"h-[10%] bg-red-400 w-full items-center"} />
+			<div
+				className={
+					"h-[10%] bg-white border-black border-y-8 w-full items-center"
+				}
+			/>
 			{/* PLAYERS TURN, ACTIONS AND PREVIEW */}
 			<div
 				className={

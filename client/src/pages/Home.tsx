@@ -11,7 +11,7 @@ export default function Home() {
 			<SponsorSection />
 			<GamePresentationSection />
 			<a href={"/lobby"} className={"flex py-24 justify-center"}>
-				<Button variant={"light"} size={"lg"}>
+				<Button variant={"light"} size={"xl"}>
 					<h2 className={"font-bold p-4"}>PLAY</h2>
 				</Button>
 			</a>
