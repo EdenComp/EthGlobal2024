@@ -182,7 +182,6 @@ const abi = [
 		type: "function",
 		name: "makeDiceCall",
 		inputs: [
-			{ name: "gameId", type: "uint256", internalType: "uint256" },
 			{ name: "nbDice", type: "uint16", internalType: "uint16" },
 			{ name: "dieValue", type: "uint8", internalType: "uint8" },
 		],
@@ -192,7 +191,7 @@ const abi = [
 	{
 		type: "function",
 		name: "makeLiarCall",
-		inputs: [{ name: "gameId", type: "uint256", internalType: "uint256" }],
+		inputs: [],
 		outputs: [],
 		stateMutability: "nonpayable",
 	},
@@ -206,7 +205,7 @@ const abi = [
 	{
 		type: "function",
 		name: "startGame",
-		inputs: [{ name: "gameId", type: "uint256", internalType: "uint256" }],
+		inputs: [],
 		outputs: [],
 		stateMutability: "nonpayable",
 	},
@@ -253,7 +252,7 @@ const abi = [
 				internalType: "uint256",
 			},
 			{
-				name: "creator",
+				name: "owner",
 				type: "address",
 				indexed: false,
 				internalType: "address",
