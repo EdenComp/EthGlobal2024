@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import GamePresentationSection from "@/pages/Home/GamePresentationSection.tsx";
 import HeroBannerSection from "@/pages/Home/HeroBannerSection.tsx";
 import SponsorSection from "@/pages/Home/SponsorSection.tsx";
+import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
 import { useNavigate } from "react-router-dom";
 import { useAccount } from "wagmi";
 
@@ -18,10 +19,17 @@ export default function Home() {
 				variant={"light"}
 				size={"xl"}
 				onClick={() => {
-					navigate(isConnected ? "/lobby" : "/");
+					navigate("/lobby");
 				}}
+				disabled={!isConnected}
 			>
-				<h2 className={"font-bold p-4"}>PLAY</h2>
+				{isConnected ? (
+					<h2 className={"font-bold p-4"}>PLAY</h2>
+				) : (
+					<div className="p-4">
+						<DynamicWidget />
+					</div>
+				)}
 			</Button>
 		</Layout>
 	);
