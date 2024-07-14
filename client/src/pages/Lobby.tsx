@@ -24,18 +24,31 @@ export type Game = {
 	playerCount: number;
 };
 
+export type DetailedGame = {
+	id: bigint;
+	alivePlayers: Hex[];
+	owner: Hex;
+	roundNumber: number;
+	rounds: unknown[];
+	turnNumber: number;
+	turnPlayerIndex: number;
+};
+
 export default function Lobby() {
-	const [availableGames, setAvailableGames] = useState<Game[]>([]);
-	const { isLoading, data } = useReadDeGameContract("getAvailableGames");
-	const { writeDeGameContract } = useWriteDeGameContract();
 	const { address } = useAccount();
+	const [availableGames, setAvailableGames] = useState<Game[]>([]);
+	const { isLoading: areAvailableGamesLoading, data: rawAvailableGames } =
+		useReadDeGameContract("getAvailableGames");
+	const { data: playerGame, isLoading: isPlayerGameLoading } =
+		useReadDeGameContract("getPlayerGame", [address]);
+	const { writeDeGameContract } = useWriteDeGameContract();
 	const navigate = useNavigate();
 
 	useListenForDeGameEvent<{
-		args: { gameId: bigint; creator: Hex };
-	}>("GameCreated", ({ args: { gameId: id, creator: owner } }) => {
+		args: { gameId: bigint; owner: Hex };
+	}>("GameCreated", ({ args: { gameId: id, owner } }) => {
 		setAvailableGames((prev) => [...prev, { id, owner, playerCount: 1 }]);
-		if (owner === address) navigate(`/game/${numberToHex(id)}`);
+		if (owner === address) navigate(`/playground?id=${numberToHex(id)}`);
 	});
 
 	useListenForDeGameEvent<{ args: { gameId: bigint; playerCount: number } }>(
@@ -48,17 +61,31 @@ export default function Lobby() {
 	);
 
 	useEffect(() => {
-		if (data) setAvailableGames(data as Game[]);
-	}, [data]);
+		if (rawAvailableGames) setAvailableGames(rawAvailableGames as Game[]);
+	}, [rawAvailableGames]);
+
+	useEffect(() => {
+		if (playerGame !== undefined) {
+			console.log(playerGame);
+			navigate(
+				`/playground?id=${numberToHex((playerGame as DetailedGame).id)}`,
+			);
+		}
+	}, [playerGame, navigate]);
 
 	return (
 		<div className="flex flex-col items-center gap-y-10">
-			{isLoading ? <h1>Loading...</h1> : <Games games={availableGames} />}
+			{areAvailableGamesLoading || isPlayerGameLoading ? (
+				<h1>Loading...</h1>
+			) : (
+				<Games games={availableGames} />
+			)}
 			<Button
 				className="w-fit"
 				size="lg"
-				variant="destructive"
-				onClick={() => writeDeGameContract("createGame")}
+				onClick={() => {
+					writeDeGameContract("createGame");
+				}}
 				type="button"
 			>
 				Create game
@@ -92,7 +119,7 @@ function Games({ games }: { games: Game[] }) {
 								size="lg"
 								onClick={() => {
 									writeDeGameContractAsync("joinGame", [id]).then(() =>
-										navigate(`/game/${numberToHex(id)}`),
+										navigate(`/playground?id=${numberToHex(id)}`),
 									);
 								}}
 								type="button"
