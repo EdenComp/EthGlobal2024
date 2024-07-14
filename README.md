@@ -36,8 +36,7 @@ Go to the folder:
 ```sh
 cd client
 ```
-
-
+ 
 Install all the packages:
 ```sh
 yarn install
@@ -49,6 +48,12 @@ Run the client 🚀:
 ```sh
 yarn dev
 ```
+
+Here you can find a few visualizations of our project:
+
+![](./.git/assets/Capture-2024-07-14-083355.png)
+![](./.git/assets/Capture-2024-07-14-083529.png)
+
 
 
 ## Made with :white_heart: by:
