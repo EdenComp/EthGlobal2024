@@ -22,10 +22,10 @@ const PlayerBoard = ({ player }: { player: Player | undefined }) => {
 		player && (
 			<div
 				className={
-					"bg-red-500 rounded-b-2xl size-full flex flex-col justify-center items-center space-y-4 pb-6"
+					" rounded-t-2xl size-full flex flex-col justify-center items-center space-y-6 pb-6"
 				}
 			>
-				<h2 className={"font-bold"}>{player.name}</h2>
+				<h3 className={"font-bold pb-8"}>Your Board</h3>
 				<div
 					className={"h-[40%] w-full flex flex-row items-center justify-around"}
 				>
@@ -35,7 +35,7 @@ const PlayerBoard = ({ player }: { player: Player | undefined }) => {
 						<input
 							type="number"
 							className={
-								"w-16 h-16 bg-red-400 border-2 border-neutral-white rounded-2xl"
+								"w-16 h-16 bg-white border-2 border-neutral-white rounded-2xl"
 							}
 							style={{
 								fontSize: "3rem",
@@ -159,12 +159,53 @@ export default function Playground(): ReactElement {
 				backgroundImage: `url(${Tapis})`,
 			}}
 		>
-			<div className={"flex h-[45%] w-full"}>
+			{/*LIAR*/}
+			{/*
+			<div
+				className={
+					"absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50"
+				}
+			/>
+			*/}
+
+			{/* PLAYERS TURN, ACTIONS AND PREVIEW */}
+			<div
+				className={
+					"h-[50%] flex overflow-hidden justify-center items-center space-x-8"
+				}
+			>
+				{displayedPlayers.map((player, index) => (
+					<div
+						key={index}
+						className={`flex h-[380px] rounded-2xl w-[680px] justify-center items-center flex-col bg-opacity-25 backdrop-blur-xl border-t border-red-50 ${
+							players.find((p) => p.name === player.name)?.name ===
+							players[currentPlayer].name
+								? "bg-red-50"
+								: "bg-red-500 scale-90"
+						}`}
+					>
+						<h3 className={"font-bold"}>{player.name}</h3>
+						<div className={"w-full h-[50%]"} />
+						<div className={"flex flex-row space-x-4"}>
+							{player.dices.map((dice, index) => (
+								<img
+									key={index}
+									src={turnEnd ? diceImages[dice - 1] : DiceU}
+									height={70}
+									width={70}
+									alt={"dice"}
+								/>
+							))}
+						</div>
+					</div>
+				))}
+			</div>
+			<div className={"flex h-[50%] w-full bg-red-500"}>
 				{/* MENU */}
 				<div className={"w-[25%] h-full p-12 flex"}>
 					<div
 						className={
-							"bg-red-500 rounded-2xl size-full p-8 flex flex-col items-center space-y-2"
+							"bg-red-200 rounded-l-2xl size-full p-8 flex flex-col items-center space-y-2"
 						}
 					>
 						<h3 className={"font-bold"}>{"Menu"}</h3>
@@ -207,7 +248,7 @@ export default function Playground(): ReactElement {
 					</div>
 					<div
 						className={
-							"bg-red-400 rounded-2xl size-full p-8 flex flex-col items-center space-y-2"
+							"bg-red-200 rounded-r-2xl size-full p-8 flex flex-col items-center space-y-2"
 						}
 					>
 						<h3 className={"font-bold"}>{"Actions"}</h3>
@@ -216,7 +257,7 @@ export default function Playground(): ReactElement {
 					</div>
 				</div>
 				{/* PLAYER BOARD */}
-				<div className={"w-[50%] h-full px-8 pb-4"}>
+				<div className={"w-[50%] h-full px-8 pt-4"}>
 					<PlayerBoard player={players.find((p) => p.name === playerName)} />
 				</div>
 				{/* PLAYERS LEADERBOARD */}
@@ -257,44 +298,6 @@ export default function Playground(): ReactElement {
 						</div>
 					</div>
 				</div>
-			</div>
-			{/* QUICK INFOS */}
-			<div
-				className={
-					"h-[10%] bg-white border-black border-y-8 w-full items-center"
-				}
-			/>
-			{/* PLAYERS TURN, ACTIONS AND PREVIEW */}
-			<div
-				className={
-					"h-[45%] flex overflow-hidden justify-center items-center space-x-8"
-				}
-			>
-				{displayedPlayers.map((player, index) => (
-					<div
-						key={index}
-						className={`flex h-[350px] rounded-2xl w-[640px] justify-center items-center flex-col bg-opacity-20 backdrop-blur-xl border-t border-red-50 ${
-							players.find((p) => p.name === player.name)?.name ===
-							players[currentPlayer].name
-								? "bg-red-500"
-								: "bg-red-420 scale-90"
-						}`}
-					>
-						<h3 className={"font-bold"}>{player.name}</h3>
-						<div className={"w-full h-[50%]"} />
-						<div className={"flex flex-row space-x-4"}>
-							{player.dices.map((dice, index) => (
-								<img
-									key={index}
-									src={turnEnd ? diceImages[dice - 1] : DiceU}
-									height={70}
-									width={70}
-									alt={"dice"}
-								/>
-							))}
-						</div>
-					</div>
-				))}
 			</div>
 		</div>
 	);
