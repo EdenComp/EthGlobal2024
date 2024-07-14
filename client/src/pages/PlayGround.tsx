@@ -1,3 +1,4 @@
+import Board from "@/assets/Board.png";
 import Dice1 from "@/assets/Dice/Dice-1.png";
 import Dice2 from "@/assets/Dice/Dice-2.png";
 import Dice3 from "@/assets/Dice/Dice-3.png";
@@ -5,10 +6,10 @@ import Dice4 from "@/assets/Dice/Dice-4.png";
 import Dice5 from "@/assets/Dice/Dice-5.png";
 import Dice6 from "@/assets/Dice/Dice-6.png";
 import DiceU from "@/assets/Dice/Dice-unknown.png";
+import Liar from "@/assets/Liar.png";
 import Tapis from "@/assets/Tapis.png";
 import { Button } from "@/components/ui/button.tsx";
-import { type ReactElement, useEffect } from "react";
-import { useState } from "react";
+import { type ReactElement, useEffect, useState } from "react";
 
 const diceImages = [Dice1, Dice2, Dice3, Dice4, Dice5, Dice6, DiceU];
 
@@ -17,7 +18,19 @@ interface Player {
 	dices: number[];
 }
 
-const PlayerBoard = ({ player }: { player: Player | undefined }) => {
+const PlayerBoard = ({
+	player,
+	selectedDice,
+	setSelectedDice,
+	validateBet,
+	liarCall,
+}: {
+	player: Player | undefined;
+	selectedDice: number;
+	setSelectedDice: any;
+	validateBet: any;
+	liarCall: any;
+}) => {
 	return (
 		player && (
 			<div
@@ -30,7 +43,19 @@ const PlayerBoard = ({ player }: { player: Player | undefined }) => {
 					className={"h-[40%] w-full flex flex-row items-center justify-around"}
 				>
 					<div className={"flex space-x-8 text-center"}>
-						<img src={DiceU} height={100} width={100} alt={"unknown dice"} />
+						<div
+							onClick={() => {
+								const newSelectedDice = selectedDice + 1;
+								setSelectedDice(newSelectedDice > 6 ? 1 : newSelectedDice);
+							}}
+						>
+							<img
+								src={selectedDice === 0 ? DiceU : diceImages[selectedDice - 1]}
+								height={100}
+								width={100}
+								alt={"selected dice"}
+							/>
+						</div>
 						<h1 className={"font-bold"}>x</h1>
 						<input
 							type="number"
@@ -46,10 +71,20 @@ const PlayerBoard = ({ player }: { player: Player | undefined }) => {
 						/>
 					</div>
 					<div className={"flex flex-col space-y-4"}>
-						<Button variant={"light"}>
+						<Button
+							variant={"light"}
+							onClick={() => {
+								liarCall();
+							}}
+						>
 							<p className={"body-bold-large"}>Menteur</p>
 						</Button>
-						<Button variant={"light"}>
+						<Button
+							variant={"light"}
+							onClick={() => {
+								validateBet();
+							}}
+						>
 							<p className={"body-bold-large px-2.5"}>Valider</p>
 						</Button>
 					</div>
@@ -72,7 +107,10 @@ const PlayerBoard = ({ player }: { player: Player | undefined }) => {
 
 export default function Playground(): ReactElement {
 	const [turnEnd, setTurnEnd] = useState(false);
+	const [selectedDice, setSelectedDice] = useState(0);
 	const [currentPlayer, setCurrentPlayer] = useState(0);
+	const [showLiar, setShowLiar] = useState(false); // nouvel état pour afficher l'image Liar
+
 	const playerName = "aTom.Inc";
 	const players: Player[] = [
 		{
@@ -132,6 +170,19 @@ export default function Playground(): ReactElement {
 		setSortedPlayers(newSortedPlayers);
 	}, []);
 
+	const liarCall = () => {
+		console.log("liar");
+		setShowLiar(true);
+		setTimeout(() => {
+			setShowLiar(false);
+		}, 1000);
+	};
+
+	const validateBet = () => {
+		console.log("validate");
+		setSelectedDice(0);
+	};
+
 	const updateCurrentPlayer = (step: number) => {
 		const totalPlayers = players.length;
 		const nextPlayerIndex =
@@ -160,13 +211,21 @@ export default function Playground(): ReactElement {
 			}}
 		>
 			{/*LIAR*/}
-			{/*
-			<div
-				className={
-					"absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50"
-				}
-			/>
-			*/}
+			{showLiar && (
+				<div
+					className={
+						"absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50"
+					}
+				>
+					<div
+						className={
+							"absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+						}
+					>
+						<img src={Liar} alt={"Liar"} width={1280} />
+					</div>
+				</div>
+			)}
 
 			{/* PLAYERS TURN, ACTIONS AND PREVIEW */}
 			<div
@@ -200,12 +259,22 @@ export default function Playground(): ReactElement {
 					</div>
 				))}
 			</div>
-			<div className={"flex h-[50%] w-full bg-red-500"}>
+			<div
+				className={"relative flex h-[50%] w-full bg-cover bg-center"}
+				style={{
+					backgroundImage: `url(${Board})`,
+				}}
+			>
+				<div
+					className={
+						"absolute w-full h-full bg-red-50 bg-opacity-20 backdrop-blur-lg"
+					}
+				/>
 				{/* MENU */}
-				<div className={"w-[25%] h-full p-12 flex"}>
+				<div className={"w-[25%] h-full p-12 flex z-10"}>
 					<div
 						className={
-							"bg-red-200 rounded-l-2xl size-full p-8 flex flex-col items-center space-y-2"
+							"bg-red-200 rounded-2xl size-full p-8 flex flex-col items-center space-y-2"
 						}
 					>
 						<h3 className={"font-bold"}>{"Menu"}</h3>
@@ -246,22 +315,19 @@ export default function Playground(): ReactElement {
 							Quitter
 						</Button>
 					</div>
-					<div
-						className={
-							"bg-red-200 rounded-r-2xl size-full p-8 flex flex-col items-center space-y-2"
-						}
-					>
-						<h3 className={"font-bold"}>{"Actions"}</h3>
-						<Button variant={"light"}>Menteur</Button>
-						<Button variant={"light"}>Valider</Button>
-					</div>
 				</div>
 				{/* PLAYER BOARD */}
-				<div className={"w-[50%] h-full px-8 pt-4"}>
-					<PlayerBoard player={players.find((p) => p.name === playerName)} />
+				<div className={"w-[50%] h-full px-8 pt-4 z-10"}>
+					<PlayerBoard
+						player={players.find((p) => p.name === playerName)}
+						selectedDice={selectedDice}
+						setSelectedDice={setSelectedDice}
+						validateBet={validateBet}
+						liarCall={liarCall}
+					/>
 				</div>
 				{/* PLAYERS LEADERBOARD */}
-				<div className={"w-[25%] h-full p-12"}>
+				<div className={"w-[25%] h-full p-12 z-10"}>
 					<div
 						className={
 							"relative bg-red-200 rounded-2xl size-full overflow-hidden"
