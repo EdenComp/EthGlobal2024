@@ -1,6 +1,6 @@
 # DéGame
 
-Welcome to the [Liar's dice](https://www.wikihow.com/Play-Liar%27s-Dice) On-Chain project! This project was built during the Brussels ETHGlobal hackathon. It leverages Inco, the universal confidentiality layer for Web3, to bring the classic game of Liar's Dice onto the blockchain with enhanced security and confidentiality.
+Welcome to the [Liar's dice](https://www.wikihow.com/Play-Liar%27s-Dice) On-Chain project! This project was built during the Brussels ETHGlobal 2024 hackathon. It leverages Inco, the universal confidentiality layer for Web3, to bring the classic game of Liar's Dice onto the blockchain with enhanced security and confidentiality.
 
 ## Installation
 
