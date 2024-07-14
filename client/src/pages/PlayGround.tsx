@@ -5,6 +5,7 @@ import Dice4 from "@/assets/Dice/Dice-4.png";
 import Dice5 from "@/assets/Dice/Dice-5.png";
 import Dice6 from "@/assets/Dice/Dice-6.png";
 import DiceU from "@/assets/Dice/Dice-unknown.png";
+import Tapis from "@/assets/Tapis.png";
 import { Button } from "@/components/ui/button.tsx";
 import { type ReactElement, useEffect } from "react";
 import { useState } from "react";
@@ -99,17 +100,22 @@ export default function Playground(): ReactElement {
 	console.log("players", players);
 	console.log("displayedPlayers", displayedPlayers);
 	return (
-		<div className="relative h-screen min-w-screen flex flex-col items-center justify-center bg-slate-200 overflow-hidden text-neutral-white">
+		<div
+			className="relative h-screen min-w-screen flex flex-col spa items-center justify-center bg-cover bg-center overflow-hidden text-neutral-white"
+			style={{
+				backgroundImage: `url(${Tapis})`,
+			}}
+		>
 			<div className={"flex h-[45%] w-full"}>
 				{/* MENU */}
-				<div className={"w-[25%] h-full p-12"}>
+				<div className={"w-[25%] h-full p-12 flex"}>
 					<div
 						className={
-							"bg-slate-400 rounded-2xl size-full p-8 flex flex-col items-center"
+							"bg-red-500 rounded-2xl size-full p-8 flex flex-col items-center space-y-2"
 						}
 					>
 						<h3 className={"font-bold"}>{"Menu"}</h3>
-						<div className={"flex"}>
+						<div className={"flex items-center space-x-2"}>
 							<Button
 								onClick={() => {
 									updateCurrentPlayer(-1);
@@ -118,11 +124,12 @@ export default function Playground(): ReactElement {
 							>
 								prev
 							</Button>
-							<h2>{currentPlayer + 1}</h2>
+							<h3>{currentPlayer + 1}</h3>
 							<Button
 								onClick={() => {
 									updateCurrentPlayer(1);
 								}}
+								variant={"light"}
 							>
 								next
 							</Button>
@@ -132,6 +139,7 @@ export default function Playground(): ReactElement {
 							onClick={() => {
 								setTurnEnd(!turnEnd);
 							}}
+							variant={"light"}
 						>
 							Terminer tour
 						</Button>
@@ -139,16 +147,26 @@ export default function Playground(): ReactElement {
 							onClick={() => {
 								window.location.href = "/";
 							}}
+							variant={"light"}
 						>
 							Quitter
 						</Button>
+					</div>
+					<div
+						className={
+							"bg-red-400 rounded-2xl size-full p-8 flex flex-col items-center space-y-2"
+						}
+					>
+						<h3 className={"font-bold"}>{"Actions"}</h3>
+						<Button variant={"light"}>Menteur</Button>
+						<Button variant={"light"}>Valider</Button>
 					</div>
 				</div>
 				{/* PLAYER BOARD */}
 				<div className={"w-[50%] h-full px-8 pb-6"}>
 					<div
 						className={
-							"bg-slate-500 rounded-b-2xl size-full flex flex-col justify-center items-center space-y-4"
+							"bg-red-500 rounded-b-2xl size-full flex flex-col justify-center items-center space-y-4"
 						}
 					>
 						<h2 className={"font-bold"}>
@@ -170,7 +188,7 @@ export default function Playground(): ReactElement {
 								<input
 									type="number"
 									className={
-										"w-16 h-16 bg-slate-400 border-2 border-neutral-white rounded-2xl"
+										"w-16 h-16 bg-red-400 border-2 border-neutral-white rounded-2xl"
 									}
 									style={{
 										fontSize: "3rem",
@@ -181,10 +199,10 @@ export default function Playground(): ReactElement {
 								/>
 							</div>
 							<div className={"flex flex-col space-y-4"}>
-								<Button>
+								<Button variant={"light"}>
 									<p className={"body-bold-large"}>Menteur</p>
 								</Button>
-								<Button>
+								<Button variant={"light"}>
 									<p className={"body-bold-large px-2.5"}>Valider</p>
 								</Button>
 							</div>
@@ -208,7 +226,7 @@ export default function Playground(): ReactElement {
 				<div className={"w-[25%] h-full p-12"}>
 					<div
 						className={
-							"relative bg-slate-400 rounded-2xl size-full overflow-hidden"
+							"relative bg-red-200 rounded-2xl size-full overflow-hidden"
 						}
 					>
 						<h3 className={"font-bold text-center py-4"}>Leaderboard</h3>
@@ -216,9 +234,7 @@ export default function Playground(): ReactElement {
 							<div
 								key={index}
 								className={`flex flex-row space-x-4 items-center justify-between text-left px-12 ${
-									player.name === playerName
-										? "bg-orange-900 bg-opacity-20"
-										: ""
+									player.name === playerName ? "bg-white bg-opacity-20" : ""
 								}`}
 							>
 								<p className={"body-default "}>{player.name}</p>
@@ -229,7 +245,7 @@ export default function Playground(): ReactElement {
 						))}
 						<div
 							className={
-								"w-full h-[10%] absolute bottom-0 bg-orange-900 rounded-b-2xl flex items-center justify-between px-12"
+								"w-full h-[10%] absolute bottom-0 bg-orange-50 rounded-b-2xl flex items-center justify-between px-12"
 							}
 						>
 							<p className={"body-bold-default"}>
@@ -246,7 +262,7 @@ export default function Playground(): ReactElement {
 				</div>
 			</div>
 			{/* QUICK INFOS */}
-			<div className={"h-[10%] bg-slate-400 w-full items-center"} />
+			<div className={"h-[10%] bg-red-400 w-full items-center"} />
 			{/* PLAYERS TURN, ACTIONS AND PREVIEW */}
 			<div
 				className={
@@ -256,11 +272,11 @@ export default function Playground(): ReactElement {
 				{displayedPlayers.map((player, index) => (
 					<div
 						key={index}
-						className={`flex h-[350px] rounded-2xl w-[640px] justify-center items-center flex-col ${
+						className={`flex h-[350px] rounded-2xl w-[640px] justify-center items-center flex-col bg-opacity-20 backdrop-blur-xl border-t border-red-50 ${
 							players.find((p) => p.name === player.name)?.name ===
 							players[currentPlayer].name
-								? "bg-slate-500"
-								: "bg-slate-400 scale-90"
+								? "bg-red-500"
+								: "bg-red-420 scale-90"
 						}`}
 					>
 						<h3 className={"font-bold"}>{player.name}</h3>

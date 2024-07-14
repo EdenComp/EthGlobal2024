@@ -1,4 +1,4 @@
-import bgImage from "@/assets/web3Home.jpg";
+import redDices from "@/assets/videos/redDices.mp4";
 import type { ReactElement } from "react";
 import {useEffect, useState} from "react";
 import diceImage from "@/assets/dice-home.jpg";
@@ -16,19 +16,19 @@ const HeroBannerSection = (): ReactElement => {
 	}, [isOnDie]);
 
 	return (
-		<div
-			className="relative flex items-center justify-center w-screen h-[800px] bg-cover bg-center"
-			style={{ backgroundImage: `url(${bgImage})` }}
-		>
+		<div className="relative flex items-center justify-center w-screen h-[800px] overflow-hidden text-white">
+			<video className="VideoTag absolute top-0 w-screen" autoPlay loop muted>
+				<source src={redDices} type="video/mp4" />
+			</video>
 			<div
 				className={
-					"absolute h-1/2 w-full bottom-0 bg-gradient-to-t from-background-secondary z-20"
+					"absolute h-full w-full bottom-0 bg-gradient-to-t from-red-50 z-20"
 				}
 			/>
 			<div className={"flex items-center justify-center w-[1440px] h-full"}>
 				<div
 					className={
-						"flex flex-col w-full h-1/2 bg-opacity-20 bg-neutral-grey_1 rounded-3xl backdrop-blur-2xl items-center justify-center border-t border-neutral-white space-y-8"
+						"flex flex-col w-full h-1/2 bg-opacity-20 bg-[#dddddd] rounded-3xl backdrop-blur-2xl items-center justify-center border-t border-white space-y-8"
 					}
 				>
 					<div className={"flex flex-row items-center title-container"}>

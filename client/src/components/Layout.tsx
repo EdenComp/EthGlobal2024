@@ -4,7 +4,7 @@ import Navbar from "./Layout/Navbar";
 
 const Layout = ({ children }: { children: ReactNode }): ReactElement => {
 	return (
-		<div className="bg-background-tertiary text-neutral-white">
+		<div className="">
 			<Navbar />
 			<div className="min-h-screen flex flex-col">{children}</div>
 			<Footer />
