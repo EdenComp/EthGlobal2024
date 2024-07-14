@@ -22,8 +22,8 @@ const TeamCard = ({
 					className="w-full h-64 object-cover object-center"
 					src={profile.photo}
 				/>
-				<div className="p-6 z-auto bg-background-secondary group-hover:bg-orange-900 transition duration-300 ease-in-out">
-					<p className="text-orange-700 group-hover:text-neutral-white body-bold-large">
+				<div className="p-6 z-auto bg-background-secondary group-hover:text-white group-hover:bg-orange-900 transition duration-300 ease-in-out">
+					<p className="text-orange-700 group-hover:text-white body-bold-large">
 						{profile.name}
 					</p>
 					<p className="mb-4 text-neutral-white body-small">{profile.role}</p>
