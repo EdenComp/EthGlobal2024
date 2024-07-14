@@ -15,14 +15,6 @@ export default function Home() {
 			<SponsorSection />
 			<GamePresentationSection />
 			<Button
-<<<<<<< Updated upstream
-				size="xl"
-				className="mx-auto py-10"
-				disabled={!isConnected}
-				onClick={() => navigate("/lobby")}
-			>
-				<h2 className={"font-bold"}>PLAY</h2>
-=======
 				variant={"light"}
 				size={"xl"}
 				onClick={() => {
@@ -30,7 +22,6 @@ export default function Home() {
 				}}
 			>
 				<h2 className={"font-bold p-4"}>PLAY</h2>
->>>>>>> Stashed changes
 			</Button>
 		</Layout>
 	);
