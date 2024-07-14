@@ -25,7 +25,7 @@ forge test
 
 #### Deploy:
 ```sh
-forge create --rpc-url http://127.0.0.1:8545 --private-key pkey DeGame
+forge create --rpc-url https://testnet.inco.org --private-key pkey DeGame
 ```
 
 <br/>
